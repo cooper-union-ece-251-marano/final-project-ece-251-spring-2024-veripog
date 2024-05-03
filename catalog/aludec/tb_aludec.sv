@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
 // ECE 251 Spring 2024
-// Engineer: YOUR NAMES
+// Engineer: Jaeho Cho & Malek Haddad
 // 
 //     Create Date: 2023-02-07
 //     Module Name: tb_aludec

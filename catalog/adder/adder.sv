@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
 // ECE 251 Spring 2024
-// Engineer: YOUR NAMES
+// Engineer: Jaeho Cho & Malek Haddad
 // 
 //     Create Date: 2023-02-07
 //     Module Name: adder
@@ -17,14 +17,14 @@
 
 module adder
     #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
+    input [n-1:0] a,     // n-bit input a
+    input [n-1:0] b,     // n-bit input b
+    output [n-1:0] sum,  // n-bit sum of a and b
+    output carry_out     // Carry out of the addition
 
 );
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
+    // Adding two n-bit numbers
+    assign {carry_out, sum} = a + b;
 
 endmodule
 
