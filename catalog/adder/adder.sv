@@ -17,15 +17,17 @@
 
 module adder
     #(parameter n = 32)(
-    input [n-1:0] a,     // n-bit input a
-    input [n-1:0] b,     // n-bit input b
-    output [n-1:0] sum,  // n-bit sum of a and b
-    output carry_out     // Carry out of the addition
-
+    //
+    // ---------------- PORT DEFINITIONS ----------------
+    //
+    input [31:0] A,
+    input [31:0] B,
+    output [31:0] Y
 );
-    // Adding two n-bit numbers
-    assign {carry_out, sum} = a + b;
-
+    //
+    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
+    //
+    assign Y = A + B;
 endmodule
 
 `endif // ADDER
