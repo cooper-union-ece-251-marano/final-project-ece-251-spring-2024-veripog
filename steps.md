@@ -11,13 +11,13 @@
 3. **Addressability**: Do you want byte-addressable or word-addressable memory? Byte-addressable allows more fine-grained control but may increase complexity.
 word-addressable
 4. **Register File Size**: How many general-purpose registers will your processor have?
-8
+7
 5. **Opcode Size**: How many operations do you want your ISA to support? This will determine the size of your opcode field.
 5
 6. **Immediate Size**: How large are the immediate values in your I-type instructions?
 16
 7. **Function, shamt Sizes**: If applicable, specify the sizes for any function or shift amounts used in your instruction formats.
-4 bit function field and shamt
+4 bit function field and 4 bit shamt
 
 ### Step 2: Instruction Formats
 

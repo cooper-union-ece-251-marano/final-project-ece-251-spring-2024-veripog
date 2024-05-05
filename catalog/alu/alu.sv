@@ -20,6 +20,7 @@ module alu
     //
     // ---------------- PORT DEFINITIONS ----------------
     //
+        input wire clk,                  // Clock signal
         input wire [n-1:0] a,           // Input operand A
         input wire [n-1:0] b,           // Input operand B
         input wire [2:0] alu_control,   // ALU control signals
@@ -29,7 +30,7 @@ module alu
     //
     // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
     //
-    always @(*)
+    always @(posedge clk)
     begin
         case(alu_control)
             3'b000: result = a + b;             // ADD

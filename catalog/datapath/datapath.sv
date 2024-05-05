@@ -50,9 +50,25 @@ module datapath
 
     // "next PC" logic
     dff #(n)    pcreg(clk, reset, pcnext, pc);
-    adder       pcadd1(pc, 32'b100, pcplus4);
+    adder #(.WIDTH(n)) pcadd1(
+    .A(pc),
+    .B(32'b100),
+    .Cin(1'b0),
+    .Sum(pcplus4),
+    .Cout(),             // Ignored if not used
+    .EN(1'b1),           // Always enabled
+    .RST(reset)          // Using the main reset
+);
     sl2         immsh(signimm, signimmsh);
-    adder       pcadd2(pcplus4, signimmsh, pcbranch);
+    adder #(.WIDTH(n)) pcadd2(
+    .A(pcplus4),
+    .B(signimmsh),
+    .Cin(1'b0),
+    .Sum(pcbranch),
+    .Cout(),             // Ignored if not used
+    .EN(1'b1),           // Always enabled
+    .RST(reset)          // Using the main reset
+    );
     mux2 #(n)   pcbrmux(pcplus4, pcbranch, pcsrc, pcnextbr);
     mux2 #(n)   pcmux(pcnextbr, {pcplus4[31:28], instr[25:0], 2'b00}, jump, pcnext);
 
