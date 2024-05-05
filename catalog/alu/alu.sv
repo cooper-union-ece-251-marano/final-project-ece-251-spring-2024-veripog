@@ -23,7 +23,7 @@ module alu
         input wire clk,                  // Clock signal
         input wire [n-1:0] a,           // Input operand A
         input wire [n-1:0] b,           // Input operand B
-        input wire [2:0] alu_control,   // ALU control signals
+        input wire [2:0] alucontrol,   // ALU control signals
         output reg [n-1:0] result,      // Result of ALU operation
         output reg zero                  // Zero flag
     );
@@ -32,7 +32,7 @@ module alu
     //
     always @(posedge clk)
     begin
-        case(alu_control)
+        case(alucontrol)
             3'b000: result = a + b;             // ADD
             3'b001: result = a - b;             // SUBTRACT
             3'b010: result = a & b;             // AND
