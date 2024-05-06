@@ -123,23 +123,20 @@ module maindec(input  [5:0] op,
     endcase
 endmodule
 
-module aludec(input      [5:0] funct,
-              input      [1:0] aluop,
-              output reg [2:0] alucontrol);
-
-  always @(*)
-    case(aluop)
-      2'b00: alucontrol <= 3'b010;  // add
-      2'b01: alucontrol <= 3'b110;  // sub
-      default: case(funct)          // RTYPE
-          6'b100000: alucontrol <= 3'b010; // ADD
-          6'b100010: alucontrol <= 3'b110; // SUB
-          6'b100100: alucontrol <= 3'b000; // AND
-          6'b100101: alucontrol <= 3'b001; // OR
-          6'b101010: alucontrol <= 3'b111; // SLT
-          default:   alucontrol <= 3'bxxx; // ???
+module aludec(input [5:0] funct, input [1:0] aluop, output reg [2:0] alucontrol);
+    always @(*)
+        case(aluop)
+            2'b00: alucontrol <= 3'b010;  // add (for LW, SW, ADDI where applicable)
+            2'b01: alucontrol <= 3'b110;  // sub (for BEQ)
+            default: case(funct)          // RTYPE operations
+                6'b100000: alucontrol <= 3'b010; // ADD
+                6'b100010: alucontrol <= 3'b110; // SUB
+                6'b100100: alucontrol <= 3'b000; // AND
+                6'b100101: alucontrol <= 3'b001; // OR
+                6'b101010: alucontrol <= 3'b111; // SLT
+                default:   alucontrol <= 3'bxxx; // undefined
+            endcase
         endcase
-    endcase
 endmodule
 
 module datapath(input         clk, reset,
@@ -206,35 +203,31 @@ module imem(input  [5:0] a,
 
   reg  [31:0] RAM[63:0];
 
-  initial
+  initial 
     begin
-      $readmemh("memfile.dat",RAM);
+        $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
     end
+
 
   assign rd = RAM[a]; // word aligned
 endmodule
 
 
-module alu(input      [31:0] a, b, 
-           input      [2:0]  alucont, 
-           output reg [31:0] result,
-           output            zero);
+module alu(input [31:0] a, b, input [2:0] alucont, output reg [31:0] result, output zero);
+    wire [31:0] b2 = alucont[2] ? ~b : b;
+    wire [31:0] sum = a + b2 + alucont[2];
+    wire slt = sum[31];
 
-  wire [31:0] b2, sum, slt;
+    always @(*)
+        case(alucont)
+            3'b000: result = a & b;  // AND
+            3'b001: result = a | b;  // OR
+            3'b010: result = sum;    // ADD
+            3'b110: result = sum;    // SUB
+            3'b111: result = {31'b0, slt};  // SLT
+        endcase
 
-  assign b2 = alucont[2] ? ~b:b; 
-  assign sum = a + b2 + alucont[2];
-  assign slt = sum[31];
-
-  always@(*)
-    case(alucont[1:0])
-      2'b00: result <= a & b;
-      2'b01: result <= a | b;
-      2'b10: result <= sum;
-      2'b11: result <= slt;
-    endcase
-
-  assign zero = (result == 32'b0);
+    assign zero = (result == 0);
 endmodule
 
 module regfile(input         clk, 
