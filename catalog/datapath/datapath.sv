@@ -82,6 +82,8 @@ module datapath
     mux2 #(n)   srcbmux(writedata, signimm, alusrc, srcb);
     alu         alu(clk, srca, srcb, alucontrol, aluout, zero);
 
+    
+
 endmodule
 
 `endif // DATAPATH

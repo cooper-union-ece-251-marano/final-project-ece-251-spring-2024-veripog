@@ -15,38 +15,54 @@
 
 `timescale 1ns/100ps
 
-module alu
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-        input wire clk,                  // Clock signal
-        input wire [n-1:0] a,           // Input operand A
-        input wire [n-1:0] b,           // Input operand B
-        input wire [2:0] alucontrol,   // ALU control signals
-        output reg [n-1:0] result,      // Result of ALU operation
-        output reg zero                  // Zero flag
-    );
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    always @(posedge clk)
-    begin
-        case(alucontrol)
-            3'b000: result = a + b;             // ADD
-            3'b001: result = a - b;             // SUBTRACT
-            3'b010: result = a & b;             // AND
-            3'b011: result = a | b;             // OR
-            3'b100: result = a ^ b;             // XOR
-            3'b101: result = ~(a | b);          // NOR
-            3'b110: result = b << a[4:0];       // SLL, shift left logical
-            3'b111: result = b >>> a[4:0];      // SRA, shift right arithmetic
-            default: result = 32'hxxxxxxxx;     // Undefined operation
-        endcase
+module alu(
+    input  logic clk,
+    input  logic [31:0] a, b,
+    input  logic [2:0] alucontrol,
+    output logic [31:0] result,
+    output logic zero
+);
 
-        // Set the zero flag if result is zero
-        zero = (result == 0);
-    end
+  logic [31:0] condinvb, sum;
+  logic [63:0] HiLo;
+  logic [31:0] sumSlt;
+  logic [63:0] next_HiLo;
+
+  assign zero = (result == 32'b0);
+  assign condinvb = alucontrol[2] ? ~b : b;
+  assign sumSlt = a + condinvb + alucontrol[2];
+
+  initial begin
+    HiLo = 64'b0;
+  end
+
+  // Compute next HiLo value based on alucontrol
+  always_comb begin
+    case (alucontrol)
+      3'b011: next_HiLo = {32'b0, a * b}; // mult, only update HiLo
+      // Add more cases if other operations should modify HiLo
+      default: next_HiLo = HiLo; // Retain current HiLo for all other operations
+    endcase
+  end
+
+  // Result computation block
+  always_comb begin
+    case (alucontrol)
+      3'b000: result = a & b; // and
+      3'b001: result = a | b; // or
+      3'b010: result = a + b; // add
+      3'b100: result = HiLo[31:0]; // MFLO
+      3'b101: result = HiLo[63:32]; // MFHI
+      3'b110: result = sumSlt; // sub
+      3'b111: result = sumSlt[31]; // slt
+      default: result = 32'b0; // default case to handle undefined alucontrol values
+    endcase
+  end
+
+  // Update HiLo at every positive clock edge if there is a change
+  always @(posedge clk) begin
+    HiLo <= next_HiLo;
+  end
 
 endmodule
 
