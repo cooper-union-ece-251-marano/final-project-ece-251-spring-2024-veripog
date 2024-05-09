@@ -96,6 +96,7 @@ module aludec(input [5:0] funct,
                 6'b100010: alucontrol <= 3'b110; // SUB
                 6'b100100: alucontrol <= 3'b000; // AND
                 6'b100101: alucontrol <= 3'b001; // OR
+                6'b100111: alucontrol <= 3'b011; // NOR
                 6'b101010: alucontrol <= 3'b111; // SLT
                 default:   alucontrol <= 3'bxxx; // undefined
             endcase
@@ -120,7 +121,7 @@ module datapath(input         clk, reset,
   wire [31:0] result;
 
   // next PC logic
-  flopr #(32) pcreg(clk, reset, pcnext, pc);
+  dff #(32)   pcreg(clk, reset, pcnext, pc);
   adder       pcadd1(pc, 32'b100, pcplus4);
   sl2         immsh(signimm, signimmsh);
   adder       pcadd2(pcplus4, signimmsh, pcbranch);
@@ -168,7 +169,7 @@ module imem(input  [5:0] a,
 
   initial 
     begin
-        $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
+        $readmemh("gpt.dat", RAM, 0, 63); // Explicitly defining the range
     end
 
 
@@ -189,6 +190,7 @@ module alu(input [31:0] a, b,
             3'b000: result = a & b;  // AND
             3'b001: result = a | b;  // OR
             3'b010: result = sum;    // ADD
+            3'b011: result = ~(a | b);   // NOR
             3'b110: result = sum;    // SUB
             3'b111: result = {31'b0, slt};  // SLT
         endcase
@@ -196,10 +198,9 @@ module alu(input [31:0] a, b,
     assign zero = (result == 0);
 endmodule
 
-module regfile(input         clk, 
-               input         we3, 
+module regfile(input         clk,      we3, 
                input  [4:0]  ra1, ra2, wa3, 
-               input  [31:0] wd3, 
+               input  [31:0]           wd3, 
                output [31:0] rd1, rd2);
 
   reg [31:0] rf[31:0];
@@ -210,7 +211,8 @@ module regfile(input         clk,
   // register 0 hardwired to 0
 
   always @(posedge clk)
-    if (we3) rf[wa3] <= wd3;	
+    if (we3) 
+      rf[wa3] <= wd3;	
 
   assign rd1 = (ra1 != 0) ? rf[ra1] : 0;
   assign rd2 = (ra2 != 0) ? rf[ra2] : 0;
@@ -235,7 +237,7 @@ module signext(input  [15:0] a,
   assign y = {{16{a[15]}}, a};
 endmodule
 
-module flopr #(parameter WIDTH = 8)
+module dff #(parameter WIDTH = 8)
               (input                  clk, reset,
                input      [WIDTH-1:0] d, 
                output reg [WIDTH-1:0] q);

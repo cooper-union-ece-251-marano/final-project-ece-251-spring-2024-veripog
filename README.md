@@ -1,32 +1,35 @@
 # Veripog
 
-## ECE-251: Spring 2024
+ECE-251: Spring 2024
 
-### Instruction Set for Single-Cycle MIPS Processor
+## Instruction Set for Single-Cycle MIPS Processor
 
-#### R-Type Instructions
+### R-Type Instructions
 
-| Instruction | Function | Opcode  | Funct  | Description                |
-|-------------|----------|---------|--------|----------------------------|
-| `add`       | ADD      | 000000  | 100000 | rd = rs + rt               |
-| `sub`       | SUB      | 000000  | 100010 | rd = rs - rt               |
-| `and`       | AND      | 000000  | 100100 | rd = rs & rt               |
-| `or`        | OR       | 000000  | 100101 | rd = rs \| rt              |
-| `slt`       | SLT      | 000000  | 101010 | rd = (rs < rt) ? 1 : 0     |
+| Name | Mnemonic | Operation                       | Opcode / Funct  |
+|------|----------|---------------------------------|-----------------|
+| ADD  | `add`    | R[rd] = R[rs] + R[rt]           | \(0 / 20_{hex}\)|
+| SUB  | `sub`    | R[rd] = R[rs] - R[rt]           | \(0 / 22_{hex}\)|
+| AND  | `and`    | R[rd] = R[rs] & R[rt]           | \(0 / 24_{hex}\)|
+| OR   | `or`     | R[rd] = R[rs] \| R[rt]          | \(0 / 25_{hex}\)|
+| SLT  | `slt`    | R[rd] = (R[rs] < R[rt]) ? 1 : 0 | \(0 / 2A_{hex}\)|
+| NOR  | `nor`    | R[rd] = ~(R[rs] \| R[rt])       | \(0 / 27_{hex}\)|
 
-#### I-Type Instructions
+### I-Type Instructions
 
-| Instruction | Opcode  | Description                    |
-|-------------|---------|--------------------------------|
-| `lw`        | 100011  | rt = Memory[rs + immediate]    |
-| `sw`        | 101011  | Memory[rs + immediate] = rt    |
-| `beq`       | 000100  | if (rs == rt) branch           |
-| `addi`      | 001000  | rt = rs + immediate            |
+| Name   | Mnemonic | Operation                            | Opcode |
+|--------|----------|--------------------------------------|--------|
+| LW     | `lw`     | R[rt] = M[R[rs]+SignExtImm]          | 23     |
+| SW     | `sw`     | M[R[rs]+SignExtImm] = R[rt]          | 2B     |
+| BEQ    | `beq`    | if(R[rs]==R[rt]) <br>&nbsp; PC=PC+4+BranchAddr | 14     |
+| ADDI   | `addi`   | R[rt] = R[rs] + SignExtImm           | 08     |
 
-#### J-Type Instructions
+### J-Type Instructions
 
-| Instruction | Opcode  | Description                    |
-|-------------|---------|--------------------------------|
-| `j`         | 000010  | Jump to address                |
+| Name | Mnemonic | Operation      | Opcode |
+|------|----------|----------------|--------|
+| J    | `j`      | PC = JumpAddr  | 02     |
+
+### Instruction Formats
 
 ![Alt Text](images/instruction_format.png)
