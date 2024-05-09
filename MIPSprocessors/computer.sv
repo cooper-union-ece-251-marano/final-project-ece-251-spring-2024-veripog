@@ -1,6 +1,12 @@
+//----------------------------------------------------
+// MIPS single-cycle processor
+// David_Harris@hmc.edu and sarah.harris@unlv.edu 2015
+// Top level system including MIPS and memories
+//----------------------------------------------------
+
 module computer(input         clk, reset, 
-           output [31:0] writedata, dataadr, 
-           output        memwrite);
+                output [31:0] writedata, dataadr, 
+                output        memwrite);
 
   wire [31:0] pc, instr, readdata;
   
@@ -12,11 +18,11 @@ endmodule
 
 // single-cycle MIPS processor
 module cpu(input         clk, reset,
-            output [31:0] pc,
-            input  [31:0] instr,
-            output        memwrite,
-            output [31:0] aluout, writedata,
-            input  [31:0] readdata);
+           output [31:0] pc,
+           input  [31:0] instr,
+           output        memwrite,
+           output [31:0] aluout, writedata,
+           input  [31:0] readdata);
 
   wire        memtoreg, branch,
               pcsrc, zero,
@@ -78,7 +84,9 @@ module maindec(input  [5:0] op,
     endcase
 endmodule
 
-module aludec(input [5:0] funct, input [1:0] aluop, output reg [2:0] alucontrol);
+module aludec(input [5:0] funct, 
+              input [1:0] aluop, 
+              output reg [2:0] alucontrol);
     always @(*)
         case(aluop)
             2'b00: alucontrol <= 3'b010;  // add (for LW, SW, ADDI where applicable)
@@ -168,10 +176,13 @@ module imem(input  [5:0] a,
 endmodule
 
 
-module alu(input [31:0] a, b, input [2:0] alucont, output reg [31:0] result, output zero);
-    wire [31:0] b2 = alucont[2] ? ~b : b;
-    wire [31:0] sum = a + b2 + alucont[2];
-    wire slt = sum[31];
+module alu(input [31:0] a, b, 
+           input [2:0] alucont, 
+           output reg [31:0] result, 
+           output zero);
+           wire [31:0] b2 = alucont[2] ? ~b : b;
+           wire [31:0] sum = a + b2 + alucont[2];
+           wire slt = sum[31];
 
     always @(*)
         case(alucont)
