@@ -26,8 +26,7 @@ module computer
     //
     input  logic           clk, reset, 
     output logic [(n-1):0] writedata, dataadr, 
-    output logic           memwrite
-);
+    output logic           memwrite);
     //
     // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
     //

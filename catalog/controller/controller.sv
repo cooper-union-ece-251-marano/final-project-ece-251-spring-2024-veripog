@@ -29,8 +29,7 @@ module controller
     output logic       pcsrc, alusrc,
     output logic       regdst, regwrite,
     output logic       jump,
-    output logic [2:0] alucontrol
-);
+    output logic [2:0] alucontrol);
     //
     // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
     //
@@ -43,7 +42,6 @@ module controller
     aludec  ad(funct, aluop, alucontrol);
 
   assign pcsrc = branch & zero;
-
 endmodule
 
 `endif // CONTROLLER

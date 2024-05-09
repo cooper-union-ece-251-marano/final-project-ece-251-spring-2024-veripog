@@ -21,8 +21,7 @@ module clock
     // ---------------- PORT DEFINITIONS ----------------
     //
     input ENABLE,
-    output reg CLOCK
-);
+    output reg CLOCK);
     //
     // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
     //

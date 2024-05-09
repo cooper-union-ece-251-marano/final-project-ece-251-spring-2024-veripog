@@ -28,8 +28,7 @@ module cpu
     input  logic [(n-1):0] instr,
     output logic           memwrite,
     output logic [(n-1):0] aluout, writedata,
-    input  logic [(n-1):0] readdata
-);
+    input  logic [(n-1):0] readdata);
     //
     // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
     //
