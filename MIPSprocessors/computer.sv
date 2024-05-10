@@ -169,33 +169,33 @@ module imem(input  [5:0] a,
 
   initial 
     begin
-        $readmemh("gpt.dat", RAM, 0, 63); // Explicitly defining the range
+        $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
     end
 
 
   assign rd = RAM[a]; // word aligned
 endmodule
 
-
 module alu(input [31:0] a, b, 
            input [2:0] alucont, 
            output reg [31:0] result, 
            output zero);
-           wire [31:0] b2 = alucont[2] ? ~b : b;
-           wire [31:0] sum = a + b2 + alucont[2];
-           wire slt = sum[31];
+  
+  wire [31:0] b2 = alucont[2] ? ~b : b;
+  wire [31:0] sum = a + b2 + alucont[2];
+  wire slt = sum[31];
 
-    always @(*)
-        case(alucont)
-            3'b000: result = a & b;  // AND
-            3'b001: result = a | b;  // OR
-            3'b010: result = sum;    // ADD
-            3'b011: result = ~(a | b);   // NOR
-            3'b110: result = sum;    // SUB
-            3'b111: result = {31'b0, slt};  // SLT
-        endcase
+  always @(*)
+      case(alucont)
+          3'b000: result = a & b;         // AND
+          3'b001: result = a | b;         // OR
+          3'b010: result = sum;           // ADD
+          3'b011: result = ~(a | b);      // NOR
+          3'b110: result = sum;           // SUB
+          3'b111: result = {31'b0, slt};  // SLT
+      endcase
 
-    assign zero = (result == 0);
+  assign zero = (result == 0);
 endmodule
 
 module regfile(input         clk,      we3, 

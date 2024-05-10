@@ -1,53 +1,43 @@
-`timescale 1ns / 1ps
+module testbench();
 
-module computer_tb;
-
-  reg clk;
-  reg reset;
+  reg         clk;
+  reg         reset;
 
   wire [31:0] writedata, dataadr;
   wire memwrite;
 
-  // Instantiate the device under test (DUT)
+  // instantiate device to be tested
   computer dut(clk, reset, writedata, dataadr, memwrite);
+  
+  // initialize test
+  initial
+    begin
+      $readmemh("me.dat", dut.imem.RAM);
+      $dumpfile("computer.vcd");
+      $dumpvars(0,dut, memwrite, dataadr, writedata);
+      // Monitor signals
+      $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h",
+              $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata);
 
-  // Initialize instruction memory with the test program
-  initial begin
-    $readmemh("gpt.dat", dut.imem.RAM);
-  end
+      reset <= 1; # 22; reset <= 0;
+    end
 
-  // Clock generation
-  always begin
-    clk = 1; #5; // 5 ns high
-    clk = 0; #5; // 5 ns low
-  end
+  // generate clock to sequence tests
+  always
+    begin
+      clk <= 1; # 5; clk <= 0; # 5;
+    end
 
-  // Test sequence
-  initial begin
-    $dumpfile("computer.vcd");
-    $dumpvars(0,dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata);
-    // Monitor signals
-    $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h",
-             $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata);
-
-    // Apply reset
-    reset <= 1; #22;
-    reset <= 0;
-
-    // Run for a sufficient period to execute the test program
-    #200;
-
-    // Finish the simulation
-    $finish;
-  end
-
+  // check that 7 gets written to address 84
   always@(negedge clk)
     begin
       if(memwrite) begin
-        if (dut.dmem.RAM[21] == 88) begin
-          $display("Test Passed: Memory location 84 contains the correct value 88");
-        end else begin
-          $display("Test Failed: Memory location 84 contains %d instead of 88", dut.dmem.RAM[21]);
+        if(dataadr === 84 & writedata === 7) begin
+          $display("Simulation succeeded");
+          $stop;
+        end else if (dataadr !== 80) begin
+          $display("Simulation failed");
+          $stop;
         end
       end
     end
