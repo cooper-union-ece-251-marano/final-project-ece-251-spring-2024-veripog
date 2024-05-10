@@ -34,6 +34,18 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/instruction_format.png)
 
+### R-type instructions
+
+![Alt Text](images\R-type.png)
+
+### I-type instructions
+
+![Alt Text](images\I-type.png)
+
+### J-type instructions
+
+![Alt Text](images\J-type.png)
+
 ## Control Signal Mapping for MIPS Instructions
 
 | **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` | `ALUControl` |
