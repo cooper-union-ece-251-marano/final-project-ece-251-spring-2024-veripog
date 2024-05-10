@@ -1,35 +1,33 @@
 //----------------------------------------------------
 // MIPS single-cycle processor
-// David_Harris@hmc.edu and sarah.harris@unlv.edu 2015
-// Top level system including MIPS and memories
 //----------------------------------------------------
 
 module computer(input         clk, reset, 
                 output [31:0] writedata, dataadr, 
                 output        memwrite);
 
-  wire [31:0] pc, instr, readdata;
+  wire [31:0] pc, instr, readdata; 
   
   // instantiate processor and memories
   cpu cpu(clk, reset, pc, instr, memwrite, dataadr, writedata, readdata);
-  imem imem(pc[7:2], instr);
+  imem imem(pc[7:2], instr); // pc index out of 64 words of instructions, 32 bit instruction
   dmem dmem(clk, memwrite, dataadr, writedata, readdata);
 endmodule
 
 // single-cycle MIPS processor
-module cpu(input         clk, reset,
-           output [31:0] pc,
-           input  [31:0] instr,
-           output        memwrite,
-           output [31:0] aluout, writedata,
-           input  [31:0] readdata);
+module cpu(input         clk, reset, 
+           output [31:0] pc, 
+           input  [31:0] instr, 
+           output        memwrite, 
+           output [31:0] aluout, writedata, 
+           input  [31:0] readdata); 
 
-  wire        memtoreg, branch,
+  wire        memtoreg, branch, 
               pcsrc, zero,
               alusrc, regdst, regwrite, jump;
   wire [2:0]  alucontrol;
 
-  controller c(instr[31:26], instr[5:0], zero,
+  controller c(instr[31:26], instr[5:0], zero, // opcode, funct, zero
                memtoreg, memwrite, pcsrc,
                alusrc, regdst, regwrite, jump,
                alucontrol);
@@ -149,23 +147,24 @@ module datapath(input         clk, reset,
 endmodule
 
 
-module dmem(input         clk, we,
-            input  [31:0] a, wd,
-            output [31:0] rd);
+module dmem(input         clk, we, 
+            input  [31:0] a, wd, 
+            output [31:0] rd); 
 
-  reg  [31:0] RAM[63:0];
+  reg  [31:0] RAM[63:0]; // 64 words of memory (each 32 bits wide)
+  
+// word addressable
+  assign rd = RAM[a[31:2]]; // read data from memory at address a
 
-  assign rd = RAM[a[31:2]]; // word aligned
-
-  always @(posedge clk)
+  always @(posedge clk) // write on rising edge
     if (we)
-      RAM[a[31:2]] <= wd;
+      RAM[a[31:2]] <= wd; // write data to memory at address a
 endmodule
 
-module imem(input  [5:0] a,
-            output [31:0] rd);
+module imem(input  [5:0] a, // 6-bit address (program counter)
+            output [31:0] rd); // 32-bit instruction
 
-  reg  [31:0] RAM[63:0];
+  reg  [31:0] RAM[63:0]; // 64 words of memory (each 32 bits wide)
 
   initial 
     begin
@@ -198,12 +197,12 @@ module alu(input [31:0] a, b,
   assign zero = (result == 0);
 endmodule
 
-module regfile(input         clk,      we3, 
-               input  [4:0]  ra1, ra2, wa3, 
-               input  [31:0]           wd3, 
-               output [31:0] rd1, rd2);
+module regfile(input         clk,      we3, // clock and write enable
+               input  [4:0]  ra1, ra2, wa3, // 2 read addresses, 1 write address
+               input  [31:0]           wd3, // write data
+               output [31:0] rd1, rd2);     // 2 read data
 
-  reg [31:0] rf[31:0];
+  reg [31:0] rf[31:0]; // 32 registers (each 32 bits wide)
 
   // three ported register file
   // read two ports combinationally
@@ -214,8 +213,8 @@ module regfile(input         clk,      we3,
     if (we3) 
       rf[wa3] <= wd3;	
 
-  assign rd1 = (ra1 != 0) ? rf[ra1] : 0;
-  assign rd2 = (ra2 != 0) ? rf[ra2] : 0;
+  assign rd1 = (ra1 != 0) ? rf[ra1] : 0; // read data from register 1
+  assign rd2 = (ra2 != 0) ? rf[ra2] : 0; // read data from register 2
 endmodule
 
 module adder(input [31:0] a, b,

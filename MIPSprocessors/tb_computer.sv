@@ -12,13 +12,13 @@ module testbench();
   // initialize test
   initial
     begin
-      $readmemh("me.dat", dut.imem.RAM);
+      $readmemh("memfile.dat", dut.imem.RAM);
       $dumpfile("computer.vcd");
       $dumpvars(0,dut, memwrite, dataadr, writedata);
       // Monitor signals
-      $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h",
-              $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata);
-
+      $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h, rs = %h, rt = %h, immediate = %h",
+                $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata, 
+                dut.cpu.instr[25:21], dut.cpu.instr[20:16], dut.cpu.instr[15:0]);
       reset <= 1; # 22; reset <= 0;
     end
 
@@ -32,7 +32,7 @@ module testbench();
   always@(negedge clk)
     begin
       if(memwrite) begin
-        if(dataadr === 84 & writedata === 2) begin
+        if(dataadr === 84 & writedata === 7) begin
           $display("Simulation succeeded");
           $stop;
         end else if (dataadr !== 80) begin

@@ -99,9 +99,10 @@ def assemble_mips(assembly_code):
     return machine_code, detailed_output
 
 def main():
-    input_file = input("Enter the input assembly file name: ")
-    output_file = input("Enter the output machine code file name: ")
-    detailed_output_file = input("Enter the detailed output file name: ")
+    program_name = input("Enter the program name: ")
+    input_file = f"{program_name}.asm"
+    output_file = f"{program_name}.dat"
+    detailed_output_file = f"{program_name}_detailed.txt"
 
     try:
         with open(input_file, 'r') as file:

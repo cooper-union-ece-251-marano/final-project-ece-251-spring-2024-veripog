@@ -1,0 +1,14 @@
+00000000: addi    R1, R0, 2       # R1 = 2 (start calculating from F(2)) -> 20010002
+00000004: addi    R2, R0, 1       # R2 = F(1) = 1 -> 20020001
+00000008: addi    R3, R0, 0       # R3 = F(0) = 0 -> 20030000
+0000000c: sw      R3, 0(R0)       # Store F(0) at address 0 -> ac030000
+00000010: sw      R2, 4(R0)       # Store F(1) at address 4 -> ac020004
+00000014: addi    R5, R0, 10      # Calculate Fibonacci until F(10) (example) -> 2005000a
+00000018: slt     R7, R1, R5      # Compare current index R1 with target R5 -> 0025382a
+0000001c: beq     R7, R0, end     # If R7 is 0, then R1 >= R5, exit loop -> 10e00006
+00000020: add     R4, R2, R3      # R4 = R2 + R3 (F(n) = F(n-1) + F(n-2)) -> 00432020
+00000024: sw      R4, 0(R1)       # Store F(n) at memory address 4 * (R1) -> ac240000
+00000028: addi    R3, R2, 0       # Move R2 to R3 (F(n-2) = F(n-1)) -> 20430000
+0000002c: addi    R2, R4, 0       # Move R4 to R2 (F(n-1) = F(n)) -> 20820000
+00000030: addi    R1, R1, 1       # Increment index n -> 20210001
+00000034: j       loop            # Jump back to start of loop -> 08000006

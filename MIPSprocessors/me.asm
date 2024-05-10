@@ -7,7 +7,12 @@
 
 #       Assembly                  Description       
 main:   addi $2, $0, 6          # initialize $2 = 6    
-        addi $3, $0, 12         # initialize $3 = 12    
+        addi $2, $0, 6          # initialize $2 = 6    
+        addi $2, $0, 6          # initialize $2 = 6    
+        addi $2, $0, 6          # initialize $2 = 6    
+        addi $3, $0, 2         # initialize $3 = 2   
+        addi $3, $0, 2         # initialize $3 = 2   
+        addi $3, $0, 2         # initialize $3 = 2    
         nor  $4, $2, $3         # $4 <= 6 nor 12 = 65521    
         add  $5, $2, $3
-        sw   $4, 84($0)         # write adr 84 = 65521
+        sw   $4, 2($0)         # write adr 84 = 65521
