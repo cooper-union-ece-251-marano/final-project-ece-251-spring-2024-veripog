@@ -8,17 +8,20 @@ module testbench();
 
   // instantiate device to be tested
   computer dut(clk, reset, writedata, dataadr, memwrite);
-  
+
   // initialize test
   initial
     begin
-      $readmemh("memfile.dat", dut.imem.RAM);
+      $readmemh("fib.dat", dut.imem.RAM);
       $dumpfile("computer.vcd");
-      $dumpvars(0,dut, memwrite, dataadr, writedata);
+      $dumpvars(0, dut, memwrite, dataadr, writedata);
       // Monitor signals
-      $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h, rs = %h, rt = %h, immediate = %h",
-                $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata, 
-                dut.cpu.instr[25:21], dut.cpu.instr[20:16], dut.cpu.instr[15:0]);
+      $monitor("%d: pc = %h, instr = %h, memwrite = %b, dataadr = %h, writedata = %h, rs = %h, rt = %h, immediate = %h, ra1 = %h, ra2 = %h, wa3 = %h, wd3 = %h, rd1 = %h, rd2 = %h",
+               $time, dut.cpu.pc, dut.cpu.instr, memwrite, dataadr, writedata, 
+               dut.cpu.instr[25:21], dut.cpu.instr[20:16], dut.cpu.instr[15:0],
+               dut.cpu.dp.rf.ra1, dut.cpu.dp.rf.ra2, dut.cpu.dp.rf.wa3,
+               dut.cpu.dp.rf.wd3, dut.cpu.dp.rf.rd1, dut.cpu.dp.rf.rd2);
+
       reset <= 1; # 22; reset <= 0;
     end
 
@@ -28,17 +31,14 @@ module testbench();
       clk <= 1; # 5; clk <= 0; # 5;
     end
 
-  // check that 7 gets written to address 84
-  always@(negedge clk)
-    begin
-      if(memwrite) begin
-        if(dataadr === 84 & writedata === 7) begin
-          $display("Simulation succeeded");
-          $stop;
-        end else if (dataadr !== 80) begin
-          $display("Simulation failed");
-          $stop;
-        end
+  always @(negedge clk or posedge clk) begin
+      if (memwrite) begin
+          if (dataadr === 0) begin
+              $display("Address: %h", dataadr);
+              $display("Output (hex): %h", writedata);
+              $display("Output (dec): %d", writedata);
+              $finish();
+          end
       end
-    end
+  end
 endmodule

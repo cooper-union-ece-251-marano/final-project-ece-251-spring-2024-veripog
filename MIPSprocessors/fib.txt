@@ -1,14 +1,12 @@
-00000000: addi    R1, R0, 2       # R1 = 2 (start calculating from F(2)) -> 20010002
-00000004: addi    R2, R0, 1       # R2 = F(1) = 1 -> 20020001
-00000008: addi    R3, R0, 0       # R3 = F(0) = 0 -> 20030000
-0000000c: sw      R3, 0(R0)       # Store F(0) at address 0 -> ac030000
-00000010: sw      R2, 4(R0)       # Store F(1) at address 4 -> ac020004
-00000014: addi    R5, R0, 10      # Calculate Fibonacci until F(10) (example) -> 2005000a
-00000018: slt     R7, R1, R5      # Compare current index R1 with target R5 -> 0025382a
-0000001c: beq     R7, R0, end     # If R7 is 0, then R1 >= R5, exit loop -> 10e00006
-00000020: add     R4, R2, R3      # R4 = R2 + R3 (F(n) = F(n-1) + F(n-2)) -> 00432020
-00000024: sw      R4, 0(R1)       # Store F(n) at memory address 4 * (R1) -> ac240000
-00000028: addi    R3, R2, 0       # Move R2 to R3 (F(n-2) = F(n-1)) -> 20430000
-0000002c: addi    R2, R4, 0       # Move R4 to R2 (F(n-1) = F(n)) -> 20820000
-00000030: addi    R1, R1, 1       # Increment index n -> 20210001
-00000034: j       loop            # Jump back to start of loop -> 08000006
+00000000: addi $1, $0, 0       # Initialize $1 to 0 (Fibonacci(0)) -> 20010000
+00000004: addi $2, $0, 1       # Initialize $2 to 1 (Fibonacci(1)) -> 20020001
+00000008: addi $3, $0, 2       # Initialize $3 to 2 (counter starts at 2) -> 20030002
+0000000c: addi $4, $0, 8       # Initialize $4 to 7 (target Fibonacci index) -> 20040008
+00000010: beq  $3, $4, finish  # If counter ($3) equals 7, exit the loop -> 10640005
+00000014: add  $5, $1, $2      # $5 = $1 + $2 (next Fibonacci number) -> 00222820
+00000018: add  $1, $0, $2      # $1 = $2 (update $1 for the next iteration) -> 00020820
+0000001c: add  $2, $0, $5      # $2 = $5 (update $2 for the next iteration) -> 00051020
+00000020: addi $3, $3, 1       # Increment counter ($3) -> 20630001
+00000024: j    loop            # Repeat the loop -> 08000004
+00000028: sw   $2, 0($0)       # Store the 7th Fibonacci number in memory address 0 -> ac020000
+0000002c: j    end             # Loop forever (end of program) -> 0800000b

@@ -102,7 +102,7 @@ def main():
     program_name = input("Enter the program name: ")
     input_file = f"{program_name}.asm"
     output_file = f"{program_name}.dat"
-    detailed_output_file = f"{program_name}_detailed.txt"
+    detailed_output_file = f"{program_name}.txt"
 
     try:
         with open(input_file, 'r') as file:

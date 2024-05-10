@@ -1,23 +1,19 @@
-# Initialization
-    addi    R1, R0, 2       # R1 = 2 (start calculating from F(2))
-    addi    R2, R0, 1       # R2 = F(1) = 1
-    addi    R3, R0, 0       # R3 = F(0) = 0
-    sw      R3, 0(R0)       # Store F(0) at address 0
-    sw      R2, 4(R0)       # Store F(1) at address 4
-    addi    R5, R0, 10      # Calculate Fibonacci until F(10) (example)
+main:
+    addi $1, $0, 0       # Initialize $1 to 0 (Fibonacci(0))
+    addi $2, $0, 1       # Initialize $2 to 1 (Fibonacci(1))
+    addi $3, $0, 2       # Initialize $3 to 2 (counter starts at 2)
+    addi $4, $0, 8       # Initialize $4 to 7 (target Fibonacci index)
 
-# Main Loop
 loop:
-    slt     R7, R1, R5      # Compare current index R1 with target R5
-    beq     R7, R0, end     # If R7 is 0, then R1 >= R5, exit loop
-    add     R4, R2, R3      # R4 = R2 + R3 (F(n) = F(n-1) + F(n-2))
-    sw      R4, 0(R1)       # Store F(n) at memory address 4 * (R1)
+    beq  $3, $4, finish  # If counter ($3) equals 7, exit the loop
+    add  $5, $1, $2      # $5 = $1 + $2 (next Fibonacci number)
+    add  $1, $0, $2      # $1 = $2 (update $1 for the next iteration)
+    add  $2, $0, $5      # $2 = $5 (update $2 for the next iteration)
+    addi $3, $3, 1       # Increment counter ($3)
+    j    loop            # Repeat the loop
 
-    addi    R3, R2, 0       # Move R2 to R3 (F(n-2) = F(n-1))
-    addi    R2, R4, 0       # Move R4 to R2 (F(n-1) = F(n))
-    addi    R1, R1, 1       # Increment index n
-
-    j       loop            # Jump back to start of loop
+finish:
+    sw   $2, 0($0)       # Store the 7th Fibonacci number in memory address 0
 
 end:
-    # Finish, the result is stored in memory pointed by R1
+    j    end             # Loop forever (end of program)
