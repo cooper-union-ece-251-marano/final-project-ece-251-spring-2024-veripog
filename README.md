@@ -40,11 +40,11 @@ ECE-251: Spring 2024
 
 ### I-type instructions
 
-![Alt Text](images/I-type.png)
+![Alt Text](images/I-Type.png)
 
 ### J-type instructions
 
-![Alt Text](images/J-type.png)
+![Alt Text](images/J-Type.png)
 
 ## Control Signal Mapping for MIPS Instructions
 
