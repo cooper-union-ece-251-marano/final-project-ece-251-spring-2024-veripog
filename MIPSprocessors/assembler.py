@@ -10,11 +10,12 @@ def assemble_instruction(instruction, label_addresses, current_address):
     # Dictionary for opcode, function and register binary mappings
     opcodes = {
         'addi': '001000', 'lw': '100011', 'sw': '101011', 'beq': '000100', 'j': '000010',
-        'add': '000000', 'sub': '000000', 'and': '000000', 'or': '000000', 'slt': '000000'
+        'add': '000000', 'sub': '000000', 'and': '000000', 'or': '000000', 'nor': '000000',
+        'slt': '000000'
     }
     
     funct_codes = {
-        'add': '100000', 'sub': '100010', 'and': '100100', 'or': '100101', 'slt': '101010'
+        'add': '100000', 'sub': '100010', 'and': '100100', 'or': '100101', 'slt': '101010', 'nor': '100111'
     }
     
     # Split the instruction into its components
@@ -56,7 +57,7 @@ def assemble_instruction(instruction, label_addresses, current_address):
                 address = format(int(fields[0]), '026b')
             return f'{opcode}{address}'
         
-        elif instr in ['add', 'sub', 'and', 'or', 'slt']:
+        elif instr in ['add', 'sub', 'and', 'or', 'slt', 'nor']:
             rs = format(int(fields[1][1:]), '05b')
             rt = format(int(fields[2][1:]), '05b')
             rd = format(int(fields[0][1:]), '05b')
@@ -88,28 +89,38 @@ def assemble_mips(assembly_code):
 
     # Second pass to assemble instructions
     machine_code = []
+    detailed_output = []
     for address, instr in instructions:
         binary_instr = assemble_instruction(instr, label_addresses, address)
         if binary_instr:
             machine_code.append(binary_instr)
+            detailed_output.append((address, instr, binary_instr))
 
-    return machine_code
+    return machine_code, detailed_output
 
 def main():
     input_file = input("Enter the input assembly file name: ")
     output_file = input("Enter the output machine code file name: ")
+    detailed_output_file = input("Enter the detailed output file name: ")
 
     try:
         with open(input_file, 'r') as file:
             assembly_code = file.read()
         
-        machine_code = assemble_mips(assembly_code)
+        machine_code, detailed_output = assemble_mips(assembly_code)
         
+        # Write machine code to output file
         with open(output_file, 'w') as file:
             for code in machine_code:
                 file.write(f"{int(code, 2):08x}\n")
+
+        # Write detailed output to detailed output file
+        with open(detailed_output_file, 'w') as file:
+            for address, instr, code in detailed_output:
+                file.write(f"{address:08x}: {instr} -> {int(code, 2):08x}\n")
         
         print(f"Machine code successfully written to {output_file}")
+        print(f"Detailed output successfully written to {detailed_output_file}")
 
     except FileNotFoundError:
         print(f"Error: File {input_file} not found.")
