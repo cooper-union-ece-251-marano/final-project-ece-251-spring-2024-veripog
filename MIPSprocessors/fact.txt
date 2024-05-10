@@ -1,0 +1,17 @@
+00000000: addi $3, $0, 5          # $3 = 5, Initialize n, the value whose factorial is to be computed -> 20030005
+00000004: addi $2, $0, 1          # $2 = 1, Initialize the accumulator for factorial result (0! = 1! = 1) -> 20020001
+00000008: addi $8, $3, 0          # $8 = n, used to decrement for factorial computation -> 20680000
+0000000c: beq  $3, $0, store_result # If n is 0, factorial is 1, jump to store result -> 1060000c
+00000010: beq  $3, $1, store_result # If n is 1, factorial is also 1, jump to store result -> 1061000b
+00000014: add  $2, $0, $0         # Reset accumulator $2 to 0 for each multiplication cycle -> 00001020
+00000018: addi $6, $0, 0          # $6 = 0, Initialize counter for multiplication -> 20060000
+0000001c: add $4, $0, $2         # $4 = $2, Set multiplicand to current factorial result -> 00022020
+00000020: add  $2, $2, $8         # Multiply by adding $8 (current multiplier) to $2 -> 00481020
+00000024: addi $6, $6, 1          # Increment counter $6 -> 20c60001
+00000028: slt  $7, $6, $8         # Check if $6 (counter) is still less than $8 (current multiplier) -> 00c8382a
+0000002c: beq  $7, $0, multiply_end # If counter equals multiplier, end multiply loop -> 10e00001
+00000030: j    multiply           # Otherwise, continue multiplication loop -> 08000008
+00000034: addi $8, $8, -1         # Decrement $8, reducing the multiplier for the next factorial step -> 2108ffff
+00000038: beq  $8, $1, store_result # If $8 is now 1, all multiplication steps are done, store result -> 11010001
+0000003c: j    factorial_loop     # If not the last step, jump back to start of factorial loop for next step -> 08000005
+00000040: sw   $2, 0($0)          # Store the final factorial result from $2 into memory address 0 -> ac020000

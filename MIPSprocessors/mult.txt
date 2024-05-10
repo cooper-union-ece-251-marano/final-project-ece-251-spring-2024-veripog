@@ -1,0 +1,11 @@
+00000000: addi $2, $0, 5         # initialize $2 = 5 (Multiplier) -> 20020005
+00000004: addi $3, $0, 10        # initialize $3 = 12 (Multiplicand) -> 2003000a
+00000008: addi $5, $0, 0         # initialize $5 = 0, to store the result of multiplication -> 20050000
+0000000c: addi $6, $0, 0         # initialize $6 = 0, as a counter -> 20060000
+00000010: beq  $2, $0, end       # if multiplier ($2) is 0, skip the loop, result is zero -> 10400005
+00000014: add  $5, $5, $3       # add multiplicand ($3) to $5 (Accumulating result) -> 00a32820
+00000018: addi $6, $6, 1       # increment counter ($6) by 1 -> 20c60001
+0000001c: slt  $7, $6, $2      # set $7 to 1 if $6 (Counter) < $2 (Multiplier) -> 00c2382a
+00000020: beq  $7, $0, end     # if $7 is 0 (Counter >= Multiplier), exit loop -> 10e00001
+00000024: j    multiply        # otherwise, jump back to start of multiply to continue the loop -> 08000005
+00000028: sw   $5, 0($0)        # store the result from $5 (Result) to memory address 0 (Result Address) -> ac050000
