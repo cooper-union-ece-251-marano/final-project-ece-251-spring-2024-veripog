@@ -1,0 +1,28 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Sat May 11 23:12:04 2024
+[*]
+[dumpfile] "/home/jaeho/comparch/final-project-ece-251-spring-2024-veripog/catalog/computer/computer.vcd"
+[dumpfile_mtime] "Sat May 11 23:06:39 2024"
+[dumpfile_size] 1084
+[savefile] "/home/jaeho/comparch/final-project-ece-251-spring-2024-veripog/catalog/computer/rty.gtkw"
+[timestart] 20000
+[size] 1908 999
+[pos] -802 -19
+*-12.195933 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] testbench.
+[sst_width] 214
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 292
+@28
+testbench.dut.clk[0]
+@22
+testbench.dut.instr[31:0]
+testbench.dataadr[31:0]
+@23
+testbench.writedata[31:0]
+@28
+testbench.memwrite[0]
+[pattern_trace] 1
+[pattern_trace] 0

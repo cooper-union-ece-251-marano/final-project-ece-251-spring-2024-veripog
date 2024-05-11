@@ -1,12 +1,12 @@
-00000000: addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0)) -> 20010000
-00000004: addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1)) -> 20020001
-00000008: addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2) -> 20040002
-0000000c: addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index) -> 20050008
-00000010: beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop -> 10850005
-00000014: add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number) -> 00221820
-00000018: add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration) -> 00020820
-0000001c: add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration) -> 00031020
-00000020: addi $a0, $a0, 1         # Increment counter ($a0) -> 20840001
-00000024: j    loop                # Repeat the loop -> 08000004
-00000028: sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0 -> ac020000
-0000002c: j    end                 # Loop forever (end of program) -> 0800000b
+00000000: 20010000 <- addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
+00000004: 20020001 <- addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
+00000008: 20040002 <- addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2)
+0000000c: 20050008 <- addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index)
+00000010: 10850005 <- beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop
+00000014: 00221820 <- add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number)
+00000018: 00020820 <- add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration)
+0000001c: 00031020 <- add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration)
+00000020: 20840001 <- addi $a0, $a0, 1         # Increment counter ($a0)
+00000024: 08000004 <- j    loop                # Repeat the loop
+00000028: ac020000 <- sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0
+0000002c: 0800000b <- j    end                 # Loop forever (end of program)

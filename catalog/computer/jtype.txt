@@ -1,0 +1,3 @@
+00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
+00000004: 08000002 <- j    end                # jump to end
+00000008: ac080000 <- sw $t0, 0($zero)        # Store at address 0

@@ -142,7 +142,7 @@ def main():
         # Write detailed output to detailed output file
         with open(detailed_output_file, 'w') as file:
             for address, instr, code in detailed_output:
-                file.write(f"{address:08x}: {instr} -> {int(code, 2):08x}\n")
+                file.write(f"{address:08x}: {int(code, 2):08x} <- {instr}\n")
         
         print(f"Machine code successfully written to {output_file}")
         print(f"Detailed output successfully written to {detailed_output_file}")

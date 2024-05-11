@@ -1,0 +1,4 @@
+00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
+00000004: ac080001 <- sw $t0, 1($zero)        # Store at address 1
+00000008: 8c090001 <- lw $t1, 1($zero)        # Load data
+0000000c: ac090000 <- sw $t1, 0($zero)        # Store at address 0

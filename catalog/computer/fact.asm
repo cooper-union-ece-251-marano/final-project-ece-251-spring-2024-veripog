@@ -1,34 +1,25 @@
-.data
-result: .word 0              # Memory location to store the result
+main:
+    addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+    addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+    addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
 
-.text
-main:   addi $2, $0, 4       # Initialize $2 = 4 (The number to compute factorial of)
-        addi $3, $0, 1       # Initialize $3 = 1 (To store the intermediate factorial result)
-        addi $4, $0, 1       # Initialize $4 = 1 (Counter starting from 1)
+Loop:
+    add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+    add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
 
-factorial_loop:
-        slt  $5, $2, $4      # Set $5 to 1 if $4 (Counter) > $2 (Number)
-        beq  $5, $0, multiply # If $5 is 0 (Counter <= Number), proceed to multiply
-        j    end             # Otherwise, end the loop
+MultiplyLoop:
+    beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+    add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+    addi $t4, $t4, -1           # $t4 = $t4 - 1
+    j MultiplyLoop              # Repeat the multiplication loop
 
-multiply:
-        add  $3, $3, $3      # Double the current factorial result (incorrect approach, should multiply)
-        add  $4, $4, $4      # Increment the counter (incorrect approach, should increment by 1)
-        j    factorial_loop  # Repeat the loop
+MultiplyEnd:
+    add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+    addi $t0, $t0, 1
+    addi $t3, $t2, 1            # $t3 = $t2 + 1
+    slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+    beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+    j    Loop                   # else, continue the loop
 
-end:
-        sw   $3, result($0)  # Store the final factorial result in memory
-
-# Corrected multiply section:
-factorial_loop_corrected:
-        slt  $5, $2, $4      # Set $5 to 1 if $4 (Counter) > $2 (Number)
-        beq  $5, $0, multiply_corrected # If $5 is 0 (Counter <= Number), proceed to multiply
-        j    end_corrected   # Otherwise, end the loop
-
-multiply_corrected:
-        mul  $3, $3, $4      # Multiply the current factorial result by the counter
-        addi $4, $4, 1       # Increment the counter by 1
-        j    factorial_loop_corrected  # Repeat the loop
-
-end_corrected:
-        sw   $3, result($0)  # Store the final factorial result in memory
+End:
+    sw   $t1, 0($zero)          # Store the result in memory (if needed)
