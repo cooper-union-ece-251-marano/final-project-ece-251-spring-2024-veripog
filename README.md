@@ -158,7 +158,7 @@ ECE-251: Spring 2024
 
 ### fib.asm
 
-```asm
+```
 main:
     addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
     addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
@@ -199,7 +199,7 @@ end:
 
 ### fib.dat
 
-```dat
+```
 20010000
 20020001
 20040002
