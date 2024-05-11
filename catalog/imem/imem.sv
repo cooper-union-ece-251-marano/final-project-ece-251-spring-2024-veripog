@@ -15,29 +15,18 @@
 
 `timescale 1ns/100ps
 
-module imem
-// n=bit length of register; r=bit length of addr to limit memory and not crash your verilog emulator
-    #(parameter n = 32, parameter r = 6)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-    input  logic [(r-1):0] addr,
-    output logic [(n-1):0] readdata
-);
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    logic [(n-1):0] RAM[0:(2**r-1)];
+module imem(input  [5:0] a, // 6-bit address (program counter)
+            output [31:0] rd); // 32-bit instruction
 
-  initial
+  reg  [31:0] RAM[63:0]; // 64 words of memory (each 32 bits wide)
+
+  initial 
     begin
-      // read memory in hex format from file 
-      // $readmemh("program_exe",RAM);
-      $readmemh("mult-prog_exe",RAM);
+        // $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
     end
 
-  assign readdata = RAM[addr]; // word aligned
 
+  assign rd = RAM[a]; // word aligned
 endmodule
 
 `endif // IMEM
