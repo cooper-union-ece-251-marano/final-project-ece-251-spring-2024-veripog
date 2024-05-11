@@ -22,6 +22,10 @@ ECE-251: Spring 2024
 | Memory Reference Support   | Yes                                              |
 | Total Memory Size          | 64 words (256 bytes)                             |
 
+## Datapath Diagram
+
+![Alt Text](images/DatapathDiagram.jpeg)
+
 ### R-Type Instructions
 
 | Name | Mnemonic | Operation                       | Opcode / Funct  | Opcode / Funct (Binary)     |
