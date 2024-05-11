@@ -1,15 +1,18 @@
-main:   addi $2, $0, 5         # initialize $2 = 5 (Multiplier)
-        addi $3, $0, 10        # initialize $3 = 12 (Multiplicand)
-        addi $5, $0, 0         # initialize $5 = 0, to store the result of multiplication
-        addi $6, $0, 0         # initialize $6 = 0, as a counter
+main:   
+    addi $a0, $zero, 3        # Initialize $a0 (argument) = 5 (Multiplier)
+    addi $a1, $zero, 2       # Initialize $a1 (argument) = 10 (Multiplicand)
+    addi $t0, $zero, 0        # Initialize $t0 (temporary) = 0, to store the result of multiplication
+    addi $t1, $zero, 0        # Initialize $t1 (temporary) = 0, as a counter
 
-        beq  $2, $0, end       # if multiplier ($2) is 0, skip the loop, result is zero
-        beq  $3, $0, end       # if multiplicand ($3) is 0, skip the loop, result is zero
+    beq  $a0, $zero, end      # If multiplier ($a0) is 0, skip the loop, result is zero
+    beq  $a1, $zero, end      # If multiplicand ($a1) is 0, skip the loop, result is zero
 
-multiply: add  $5, $5, $3       # add multiplicand ($3) to $5 (Accumulating result)
-          addi $6, $6, 1       # increment counter ($6) by 1
-          slt  $7, $6, $2      # set $7 to 1 if $6 (Counter) < $2 (Multiplier)
-          beq  $7, $0, end     # if $7 is 0 (Counter >= Multiplier), exit loop
-          j    multiply        # otherwise, jump back to start of multiply to continue the loop
+multiply: 
+    add  $t0, $t0, $a1        # Add multiplicand ($a1) to $t0 (Accumulating result)
+    addi $t1, $t1, 1          # Increment counter ($t1) by 1
+    slt  $t2, $t1, $a0        # Set $t2 (temporary) to 1 if $t1 (Counter) < $a0 (Multiplier)
+    beq  $t2, $zero, end      # If $t2 is 0 (Counter >= Multiplier), exit loop
+    j    multiply             # Otherwise, jump back to start of multiply to continue the loop
 
-end:     sw   $5, 0($0)        # store the result from $5 (Result) to memory address 0 (Result Address)
+end:     
+    sw   $t0, 0($zero)        # Store the result from $t0 (Result) to memory address 0 (Result Address)

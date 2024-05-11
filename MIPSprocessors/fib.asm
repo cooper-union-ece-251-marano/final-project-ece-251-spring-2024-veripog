@@ -1,19 +1,19 @@
 main:
-    addi $1, $0, 0       # Initialize $1 to 0 (Fibonacci(0))
-    addi $2, $0, 1       # Initialize $2 to 1 (Fibonacci(1))
-    addi $3, $0, 2       # Initialize $3 to 2 (counter starts at 2)
-    addi $4, $0, 8       # Initialize $4 to 7 (target Fibonacci index)
+    addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
+    addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
+    addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2)
+    addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index)
 
 loop:
-    beq  $3, $4, finish  # If counter ($3) equals 7, exit the loop
-    add  $5, $1, $2      # $5 = $1 + $2 (next Fibonacci number)
-    add  $1, $0, $2      # $1 = $2 (update $1 for the next iteration)
-    add  $2, $0, $5      # $2 = $5 (update $2 for the next iteration)
-    addi $3, $3, 1       # Increment counter ($3)
-    j    loop            # Repeat the loop
+    beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop
+    add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number)
+    add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration)
+    add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration)
+    addi $a0, $a0, 1         # Increment counter ($a0)
+    j    loop                # Repeat the loop
 
 finish:
-    sw   $2, 0($0)       # Store the 7th Fibonacci number in memory address 0
+    sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0
 
 end:
-    j    end             # Loop forever (end of program)
+    j    end                 # Loop forever (end of program)

@@ -1,11 +1,12 @@
-00000000: addi $2, $0, 5         # initialize $2 = 5 (Multiplier) -> 20020005
-00000004: addi $3, $0, 10        # initialize $3 = 12 (Multiplicand) -> 2003000a
-00000008: addi $5, $0, 0         # initialize $5 = 0, to store the result of multiplication -> 20050000
-0000000c: addi $6, $0, 0         # initialize $6 = 0, as a counter -> 20060000
-00000010: beq  $2, $0, end       # if multiplier ($2) is 0, skip the loop, result is zero -> 10400005
-00000014: add  $5, $5, $3       # add multiplicand ($3) to $5 (Accumulating result) -> 00a32820
-00000018: addi $6, $6, 1       # increment counter ($6) by 1 -> 20c60001
-0000001c: slt  $7, $6, $2      # set $7 to 1 if $6 (Counter) < $2 (Multiplier) -> 00c2382a
-00000020: beq  $7, $0, end     # if $7 is 0 (Counter >= Multiplier), exit loop -> 10e00001
-00000024: j    multiply        # otherwise, jump back to start of multiply to continue the loop -> 08000005
-00000028: sw   $5, 0($0)        # store the result from $5 (Result) to memory address 0 (Result Address) -> ac050000
+00000000: addi $a0, $zero, 3        # Initialize $a0 (argument) = 5 (Multiplier) -> 20040003
+00000004: addi $a1, $zero, 2       # Initialize $a1 (argument) = 10 (Multiplicand) -> 20050002
+00000008: addi $t0, $zero, 0        # Initialize $t0 (temporary) = 0, to store the result of multiplication -> 20080000
+0000000c: addi $t1, $zero, 0        # Initialize $t1 (temporary) = 0, as a counter -> 20090000
+00000010: beq  $a0, $zero, end      # If multiplier ($a0) is 0, skip the loop, result is zero -> 10800006
+00000014: beq  $a1, $zero, end      # If multiplicand ($a1) is 0, skip the loop, result is zero -> 10a00005
+00000018: add  $t0, $t0, $a1        # Add multiplicand ($a1) to $t0 (Accumulating result) -> 01054020
+0000001c: addi $t1, $t1, 1          # Increment counter ($t1) by 1 -> 21290001
+00000020: slt  $t2, $t1, $a0        # Set $t2 (temporary) to 1 if $t1 (Counter) < $a0 (Multiplier) -> 0124502a
+00000024: beq  $t2, $zero, end      # If $t2 is 0 (Counter >= Multiplier), exit loop -> 11400001
+00000028: j    multiply             # Otherwise, jump back to start of multiply to continue the loop -> 08000006
+0000002c: sw   $t0, 0($zero)        # Store the result from $t0 (Result) to memory address 0 (Result Address) -> ac080000

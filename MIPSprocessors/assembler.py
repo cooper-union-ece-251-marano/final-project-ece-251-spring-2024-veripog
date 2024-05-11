@@ -1,10 +1,34 @@
 import re
 
+# Register mapping
+registers = {
+    'zero': 0, '0': 0,
+    'at': 1, '1': 1,
+    'v0': 2, '2': 2, 'v1': 3, '3': 3,
+    'a0': 4, '4': 4, 'a1': 5, '5': 5, 'a2': 6, '6': 6, 'a3': 7, '7': 7,
+    't0': 8, '8': 8, 't1': 9, '9': 9, 't2': 10, '10': 10, 't3': 11, '11': 11,
+    't4': 12, '12': 12, 't5': 13, '13': 13, 't6': 14, '14': 14, 't7': 15, '15': 15,
+    's0': 16, '16': 16, 's1': 17, '17': 17, 's2': 18, '18': 18, 's3': 19, '19': 19,
+    's4': 20, '20': 20, 's5': 21, '21': 21, 's6': 22, '22': 22, 's7': 23, '23': 23,
+    't8': 24, '24': 24, 't9': 25, '25': 25,
+    'k0': 26, '26': 26, 'k1': 27, '27': 27,
+    'gp': 28, '28': 28,
+    'sp': 29, '29': 29,
+    'fp': 30, '30': 30,
+    'ra': 31, '31': 31
+}
+
 def to_signed_bin(value, bits):
     """Convert an integer to a signed binary string with the given number of bits."""
     if value < 0:
         value = (1 << bits) + value
     return format(value, f'0{bits}b')
+
+def get_register_bin(reg):
+    """Get the binary representation of a register."""
+    if reg.startswith('$'):
+        reg = reg[1:]
+    return format(registers[reg], '05b')
 
 def assemble_instruction(instruction, label_addresses, current_address):
     # Dictionary for opcode, function and register binary mappings
@@ -27,20 +51,20 @@ def assemble_instruction(instruction, label_addresses, current_address):
         opcode = opcodes[instr]
 
         if instr in ['addi', 'lw', 'sw']:
-            rt = format(int(fields[0][1:]), '05b')
+            rt = get_register_bin(fields[0])
             if instr in ['lw', 'sw']:
                 offset, base = fields[1].split('(')
                 base = base[:-1]
-                rs = format(int(base[1:]), '05b')
+                rs = get_register_bin(base)
                 imm = to_signed_bin(int(offset), 16)
             else:
-                rs = format(int(fields[1][1:]), '05b')
+                rs = get_register_bin(fields[1])
                 imm = to_signed_bin(int(fields[2]), 16)
             return f'{opcode}{rs}{rt}{imm}'
         
         elif instr in ['beq']:
-            rs = format(int(fields[0][1:]), '05b')
-            rt = format(int(fields[1][1:]), '05b')
+            rs = get_register_bin(fields[0])
+            rt = get_register_bin(fields[1])
             if fields[2] in label_addresses:
                 target_address = label_addresses[fields[2]]
                 offset = (target_address - (current_address + 4)) // 4
@@ -58,9 +82,9 @@ def assemble_instruction(instruction, label_addresses, current_address):
             return f'{opcode}{address}'
         
         elif instr in ['add', 'sub', 'and', 'or', 'slt', 'nor']:
-            rs = format(int(fields[1][1:]), '05b')
-            rt = format(int(fields[2][1:]), '05b')
-            rd = format(int(fields[0][1:]), '05b')
+            rs = get_register_bin(fields[1])
+            rt = get_register_bin(fields[2])
+            rd = get_register_bin(fields[0])
             shamt = '00000'
             funct = funct_codes[instr]
             return f'{opcode}{rs}{rt}{rd}{shamt}{funct}'

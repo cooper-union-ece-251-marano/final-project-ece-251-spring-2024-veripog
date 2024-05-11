@@ -1,12 +1,12 @@
-00000000: addi $1, $0, 0       # Initialize $1 to 0 (Fibonacci(0)) -> 20010000
-00000004: addi $2, $0, 1       # Initialize $2 to 1 (Fibonacci(1)) -> 20020001
-00000008: addi $3, $0, 2       # Initialize $3 to 2 (counter starts at 2) -> 20030002
-0000000c: addi $4, $0, 8       # Initialize $4 to 7 (target Fibonacci index) -> 20040008
-00000010: beq  $3, $4, finish  # If counter ($3) equals 7, exit the loop -> 10640005
-00000014: add  $5, $1, $2      # $5 = $1 + $2 (next Fibonacci number) -> 00222820
-00000018: add  $1, $0, $2      # $1 = $2 (update $1 for the next iteration) -> 00020820
-0000001c: add  $2, $0, $5      # $2 = $5 (update $2 for the next iteration) -> 00051020
-00000020: addi $3, $3, 1       # Increment counter ($3) -> 20630001
-00000024: j    loop            # Repeat the loop -> 08000004
-00000028: sw   $2, 0($0)       # Store the 7th Fibonacci number in memory address 0 -> ac020000
-0000002c: j    end             # Loop forever (end of program) -> 0800000b
+00000000: addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0)) -> 20010000
+00000004: addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1)) -> 20020001
+00000008: addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2) -> 20040002
+0000000c: addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index) -> 20050008
+00000010: beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop -> 10850005
+00000014: add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number) -> 00221820
+00000018: add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration) -> 00020820
+0000001c: add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration) -> 00031020
+00000020: addi $a0, $a0, 1         # Increment counter ($a0) -> 20840001
+00000024: j    loop                # Repeat the loop -> 08000004
+00000028: sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0 -> ac020000
+0000002c: j    end                 # Loop forever (end of program) -> 0800000b

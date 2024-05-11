@@ -168,7 +168,7 @@ module imem(input  [5:0] a, // 6-bit address (program counter)
 
   initial 
     begin
-        $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
+        // $readmemh("memfile.dat", RAM, 0, 63); // Explicitly defining the range
     end
 
 

@@ -12,7 +12,7 @@ module testbench();
   // initialize test
   initial
     begin
-      $readmemh("mult.dat", dut.imem.RAM);
+      $readmemh("mult.dat", dut.imem.RAM, 0, 63);
       $dumpfile("computer.vcd");
       $dumpvars(0, dut, memwrite, dataadr, writedata);
       // Monitor signals
