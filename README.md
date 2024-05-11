@@ -68,29 +68,28 @@ ECE-251: Spring 2024
 
 ### I-type Instructions
 
-| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` | `ALUControl` |
-|-----------------|------------|----------|----------|----------|------------|------------|--------|---------|--------------|
-| `LW`            | 1          | 0        | 1        | 0        | 0          | 1          | 0      | 00      | 010 (add)    |
-| `SW`            | 0          | X        | 1        | 0        | 1          | X          | 0      | 00      | 010 (add)    |
-| `BEQ`           | 0          | X        | 0        | 1        | 0          | X          | 0      | 01      | 110 (sub)    |
-| `ADDI`          | 1          | 0        | 1        | 0        | 0          | 0          | 0      | 00      | 010 (add)    |
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+| `LW`            | 1          | 0        | 1        | 0        | 0          | 1          | 0      | 00      |
+| `SW`            | 0          | X        | 1        | 0        | 1          | X          | 0      | 00      |
+| `BEQ`           | 0          | X        | 0        | 1        | 0          | X          | 0      | 01      |
+| `ADDI`          | 1          | 0        | 1        | 0        | 0          | 0          | 0      | 00      |
 
 ### R-type Instructions
 
-| **R-type Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` | `ALUControl` |
-|------------------------|------------|----------|----------|----------|------------|------------|--------|---------|--------------|
-| `ADD`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 010 (add)    |
-| `SUB`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 110 (sub)    |
-| `AND`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 000 (and)    |
-| `OR`                   | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 001 (or)     |
-| `NOR`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 011 (nor)    |
-| `SLT`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      | 111 (slt)    |
+| **R-type Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|------------------------|------------|----------|----------|----------|------------|------------|--------|---------|
+| `ADD`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `SUB`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `AND`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `OR`                   | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `NOR`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `SLT`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
 
 ### Jump Instruction
 
-| **Jump Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` | `ALUControl` |
-|----------------------|------------|----------|----------|----------|------------|------------|--------|---------|--------------|
-| `J`                  | 0          | X        | X        | 0        | 0          | X          | 1      | XX      | XXX          |
+| **Jump Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|----------------------|------------|----------|----------|----------|------------|------------|--------|---------|
+| `J`                  | 0          | X        | X        | 0        | 0          | X          | 1      | XX      |
 
 ### Explanation of Columns
 
@@ -111,7 +110,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_rtype.png)
 
-```
+```txt
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: 20090003 <- addi $t1, $zero, 3      # $t1 = 3
 00000008: 01095020 <- add $t2, $t0, $t1       # $t3 = 4 + 3 = 7
@@ -122,7 +121,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_itype.png)
 
-```
+```txt
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: ac080001 <- sw $t0, 1($zero)        # Store at address 1
 00000008: 8c090001 <- lw $t1, 1($zero)        # Load data
@@ -133,7 +132,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_jtype.png)
 
-```
+```txt
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: 08000002 <- j    end                # jump to end
 00000008: ac080000 <- sw $t0, 0($zero)        # Store at address 0
@@ -158,7 +157,7 @@ ECE-251: Spring 2024
 
 ### fib.asm
 
-```
+```txt
 main:
     addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
     addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
@@ -182,7 +181,7 @@ end:
 
 ### fib.txt
 
-```
+```txt
 00000000: addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0)) -> 20010000
 00000004: addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1)) -> 20020001
 00000008: addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2) -> 20040002
@@ -199,7 +198,7 @@ end:
 
 ### fib.dat
 
-```
+```txt
 20010000
 20020001
 20040002
