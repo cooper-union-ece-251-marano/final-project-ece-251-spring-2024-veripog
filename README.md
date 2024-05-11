@@ -16,11 +16,10 @@ ECE-251: Spring 2024
 | Instruction Length       | 32 bits                                          |
 | PC Increment             | 4 bytes                                          |
 | Immediate Size           | 16 bits                                          |
-| R-type Instruction Support | Yes                                            |
-| I-type Instruction Support | Yes                                            |
+| R-type Instruction Support | `ADD`, `SUB`, `AND`, `OR`, `SLT`, `NOR`        |
+| I-type Instruction Support | `LW`, `SW`, `BEQ`, `ADDI`                      |
+| J-type Instruction Support | `J`                                            |
 | Memory Reference Support | Yes                                              |
-| J-type Instruction Support | Yes                                            |
-| Supported Instructions   | R-type: `ADD`, `SUB`, `AND`, `OR`, `SLT`, `NOR` <br> I-type: `LW`, `SW`, `BEQ`, `ADDI`<br>J-type: `J` |
 | Total Memory Size        | 64 words (256 bytes)                             |
 
 ### R-Type Instructions
