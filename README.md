@@ -22,9 +22,13 @@ ECE-251: Spring 2024
 | Memory Reference Support   | Yes                                              |
 | Total Memory Size          | 64 words (256 bytes)                             |
 
-## Datapath Diagram
+### Datapath Diagram
 
 ![Alt Text](images/DatapathDiagram.jpeg)
+
+### Instruction Formats
+
+![Alt Text](images/instr_format.png)
 
 ### R-Type Instructions
 
@@ -37,6 +41,8 @@ ECE-251: Spring 2024
 | NOR  | `nor`    | R[rd] = ~(R[rs] \| R[rt])       | $0 / 27_{hex}$  | 000000 / 100111             |
 | SLT  | `slt`    | R[rd] = (R[rs] < R[rt]) ? 1 : 0 | $0 / 2A_{hex}$  | 000000 / 101010             |
 
+![Alt Text](images/instr_rtype.png)
+
 ### I-Type Instructions
 
 | Name   | Mnemonic | Operation                                      | Opcode       | Opcode (Binary)  |
@@ -46,25 +52,13 @@ ECE-251: Spring 2024
 | BEQ    | `beq`    | if(R[rs]==R[rt]) <br>&nbsp; PC=PC+4+BranchAddr | $14_{hex}$   | 000100           |
 | ADDI   | `addi`   | R[rt] = R[rs] + SignExtImm                     | $08_{hex}$   | 001000           |
 
+![Alt Text](images/instr_itype.png)
+
 ### J-Type Instructions
 
 | Name | Mnemonic | Operation      | Opcode       | Opcode (Binary)  |
 |------|----------|----------------|--------------|------------------|
 | J    | `j`      | PC = JumpAddr  | $02_{hex}$   | 000010           |
-
-### Instruction Formats
-
-![Alt Text](images/instr_format.png)
-
-### R-type instructions
-
-![Alt Text](images/instr_rtype.png)
-
-### I-type instructions
-
-![Alt Text](images/instr_itype.png)
-
-### J-type instructions
 
 ![Alt Text](images/instr_jtype.png)
 
