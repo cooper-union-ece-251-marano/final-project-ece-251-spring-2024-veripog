@@ -67,6 +67,7 @@ ECE-251: Spring 2024
 ### I-type Instructions
 
 | **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|------------------------------|----------|----------|----------|------------|------------|--------|---------|
 | `LW`            | 1          | 0        | 1        | 0        | 0          | 1          | 0      | 00      |
 | `SW`            | 0          | X        | 1        | 0        | 1          | X          | 0      | 00      |
 | `BEQ`           | 0          | X        | 0        | 1        | 0          | X          | 0      | 01      |
