@@ -2,9 +2,9 @@
 
 ECE-251: Spring 2024
 
-[![ECE251: Computer Architecture - Final Project](http://img.youtube.com/vi/p2kRs5L_7Zk/0.jpg)](https://www.youtube.com/watch?v=p2kRs5L_7Zk "ECE251: Computer Architecture - Final Project")
+[![ECE251: Computer Architecture - Final Project](http://img.youtube.com/vi/oY5B1MRwbe8/0.jpg)](https://www.youtube.com/watch?v=oY5B1MRwbe8 "ECE251: Computer Architecture - Final Project")
 
-<https://youtu.be/p2kRs5L_7Zk>
+<https://youtu.be/oY5B1MRwbe8>
 
 ## Instruction Set
 
