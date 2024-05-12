@@ -67,7 +67,7 @@ ECE-251: Spring 2024
 ### I-type Instructions
 
 | **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
-|------------------------------|----------|----------|----------|------------|------------|--------|---------|
+|-----------------|------------|----------|----------|----------|------------|------------|--------|---------|
 | `LW`            | 1          | 0        | 1        | 0        | 0          | 1          | 0      | 00      |
 | `SW`            | 0          | X        | 1        | 0        | 1          | X          | 0      | 00      |
 | `BEQ`           | 0          | X        | 0        | 1        | 0          | X          | 0      | 01      |
@@ -75,7 +75,7 @@ ECE-251: Spring 2024
 
 ### R-type Instructions
 
-| **R-type Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
 |------------------------|------------|----------|----------|----------|------------|------------|--------|---------|
 | `ADD`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
 | `SUB`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
@@ -86,7 +86,7 @@ ECE-251: Spring 2024
 
 ### Jump Instruction
 
-| **Jump Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
 |----------------------|------------|----------|----------|----------|------------|------------|--------|---------|
 | `J`                  | 0          | X        | X        | 0        | 0          | X          | 1      | XX      |
 
@@ -152,6 +152,50 @@ ECE-251: Spring 2024
 | $fp       | 30       | Frame Pointer                                         | Yes                      |
 | $ra       | 31       | Return Address                                        | No                       |
 
+## Usage Guide
+
+This guide demonstrates how to write a program for your ISA, load it, run it, and view the output.
+
+### Writing a Program
+
+1. Create a file with a `.asm` extension.
+2. Write your assembly code in this file.
+
+### Loading the Program
+
+1. Run the assembler by executing the following command:
+
+   ```sh
+   python assembler.py
+   ```
+
+2. When prompted, enter the name of your program (excluding the `.asm` extension). For example, if your program is named `fib.asm`, enter `fib`.
+
+3. Open the `tb_computer.sv` file.
+4. Locate the line:
+
+   ```systemverilog
+   $readmemh("fib.dat", dut.imem.RAM, 0, 63);
+   ```
+
+   Replace `fib` with the name of your program.
+
+### Running the Program
+
+1. On a Linux system, run the following command:
+
+   ```sh
+   make clean compile simulate
+   ```
+
+   The output will be displayed in both hexadecimal and decimal formats.
+
+2. To analyze the timing diagram, run:
+
+   ```sh
+   make display
+   ```
+
 ## Fibonnaci Program
 
 ### fib.asm
@@ -181,18 +225,18 @@ end:
 ### fib.txt
 
 ```t
-00000000: addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0)) -> 20010000
-00000004: addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1)) -> 20020001
-00000008: addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2) -> 20040002
-0000000c: addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index) -> 20050008
-00000010: beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop -> 10850005
-00000014: add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number) -> 00221820
-00000018: add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration) -> 00020820
-0000001c: add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration) -> 00031020
-00000020: addi $a0, $a0, 1         # Increment counter ($a0) -> 20840001
-00000024: j    loop                # Repeat the loop -> 08000004
-00000028: sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0 -> ac020000
-0000002c: j    end                 # Loop forever (end of program) -> 0800000b
+00000000: 20010000 <- addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
+00000004: 20020001 <- addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
+00000008: 20040002 <- addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2)
+0000000c: 20050008 <- addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index)
+00000010: 10850005 <- beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop
+00000014: 00221820 <- add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number)
+00000018: 00020820 <- add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration)
+0000001c: 00031020 <- add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration)
+00000020: 20840001 <- addi $a0, $a0, 1         # Increment counter ($a0)
+00000024: 08000004 <- j    loop                # Repeat the loop
+00000028: ac020000 <- sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0
+0000002c: 0800000b <- j    end                 # Loop forever (end of program)
 ```
 
 ### fib.dat
@@ -210,4 +254,78 @@ end:
 08000004
 ac020000
 0800000b
+```
+
+## Factorial Program
+
+### fact.asm
+
+```t
+main:
+    addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+    addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+    addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
+
+Loop:
+    add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+    add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
+
+MultiplyLoop:
+    beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+    add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+    addi $t4, $t4, -1           # $t4 = $t4 - 1
+    j MultiplyLoop              # Repeat the multiplication loop
+
+MultiplyEnd:
+    add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+    addi $t0, $t0, 1
+    addi $t3, $t2, 1            # $t3 = $t2 + 1
+    slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+    beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+    j    Loop                   # else, continue the loop
+
+End:
+    sw   $t1, 0($zero)          # Store the result in memory (if needed)
+```
+
+### fact.txt
+
+```t
+00000000: 20080001 <- addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+00000004: 20090001 <- addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+00000008: 200a0004 <- addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
+0000000c: 00005820 <- add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+00000010: 01006020 <- add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
+00000014: 11800003 <- beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+00000018: 01695820 <- add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+0000001c: 218cffff <- addi $t4, $t4, -1           # $t4 = $t4 - 1
+00000020: 08000005 <- j MultiplyLoop              # Repeat the multiplication loop
+00000024: 01604820 <- add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+00000028: 21080001 <- addi $t0, $t0, 1
+0000002c: 214b0001 <- addi $t3, $t2, 1            # $t3 = $t2 + 1
+00000030: 010b582a <- slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+00000034: 11600001 <- beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+00000038: 08000003 <- j    Loop                   # else, continue the loop
+0000003c: ac090000 <- sw   $t1, 0($zero)          # Store the result in memory (if needed)
+```
+
+### fact.dat
+
+```t
+20080001
+20090001
+200a0004
+00005820
+01006020
+11800003
+01695820
+218cffff
+08000005
+01604820
+21080001
+214b0001
+010b582a
+11600001
+08000003
+ac090000
 ```
