@@ -158,8 +158,6 @@ ECE-251: Spring 2024
 
 ## Usage Guide
 
-This guide demonstrates how to write a program for your ISA, load it, run it, and view the output.
-
 ### Writing a Program
 
 1. Create a file with a `.asm` extension.
