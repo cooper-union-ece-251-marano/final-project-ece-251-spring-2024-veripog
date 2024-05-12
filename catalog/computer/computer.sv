@@ -19,29 +19,16 @@
 `include "../imem/imem.sv"
 `include "../dmem/dmem.sv"
 
-module computer
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-    input  logic           clk, reset, 
-    output logic [(n-1):0] writedata, dataadr, 
-    output logic           memwrite
-);
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    logic [(n-1):0] pc, instr, readdata;
+module computer(input         clk, reset, 
+                output [31:0] writedata, dataadr, 
+                output        memwrite);
 
-    // computer internal components
-
-    // the RISC CPU
-    cpu mips(clk, reset, pc, instr, memwrite, dataadr, writedata, readdata);
-    // the instruction memory ("text segment") in main memory
-    imem imem(pc[7:2], instr);
-    // the data memory ("data segment") in main memory
-    dmem dmem(clk, memwrite, dataadr, writedata, readdata);
-
+  wire [31:0] pc, instr, readdata; 
+  
+  // instantiate processor and memories
+  cpu cpu(clk, reset, pc, instr, memwrite, dataadr, writedata, readdata);
+  imem imem(pc[7:2], instr); // pc index out of 64 words of instructions, 32 bit instruction
+  dmem dmem(clk, memwrite, dataadr, writedata, readdata);
 endmodule
 
 `endif // COMPUTER

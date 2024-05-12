@@ -15,29 +15,14 @@
 
 `timescale 1ns/100ps
 
-module dff
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-    input  logic CLOCK, RESET,
-    input  logic [(n-1):0] D,
-    output logic [(n-1):0] Q
-);
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    always @(posedge CLOCK, posedge RESET)
-    begin
-        if (RESET)
-        begin
-            Q <= 0;
-        end
-        else
-        begin
-            Q <= D;
-        end
-    end
+module dff #(parameter WIDTH = 8)
+              (input                  clk, reset,
+               input      [WIDTH-1:0] d, 
+               output reg [WIDTH-1:0] q);
+
+  always @(posedge clk, posedge reset)
+    if (reset) q <= 0;
+    else       q <= d;
 endmodule
 
 `endif // DFF

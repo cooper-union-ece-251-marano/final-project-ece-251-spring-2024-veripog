@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
 // ECE 251 Spring 2024
-// Engineer: YOUR NAMES
+// Engineer: Jaeho Cho & Malek Haddad
 // 
 //     Create Date: 2023-02-07
 //     Module Name: adder
@@ -13,19 +13,12 @@
 `ifndef ADDER
 `define ADDER
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
-module adder
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
+module adder(input [31:0] a, b,
+             output [31:0] y);
 
-);
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-
+  assign y = a + b;
 endmodule
 
-`endif // ADDER
+`endif

@@ -15,18 +15,11 @@
 
 `timescale 1ns/100ps
 
-module sl2
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-    input  logic [(n-1):0] A,
-    output logic [(n-1):0] Y
-);
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    assign Y = {A[(n-3):0], 2'b00};
+module sl2(input  [31:0] a,
+           output [31:0] y);
+
+  // shift left by 2
+  assign y = {a[29:0], 2'b00};
 endmodule
 
 `endif // SL2

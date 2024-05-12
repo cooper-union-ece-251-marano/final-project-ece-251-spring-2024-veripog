@@ -1,446 +1,333 @@
-# Catalog of Verilog Components to Build and Simulate a MIPS-based RISC.
-
-This work is based off the MIPS Verilog code by [Harris and Harris](https://pages.hmc.edu/harris/ddca/ddca2e.html)
-
-The basis of the single cycle computer as provided by these Verilog components:
-
-```verilog
-// mips.sv
-// From Section 7.6 of Digital Design & Computer Architecture
-// Updated to SystemVerilog 26 July 2011 David_Harris@hmc.edu
-`timescale 1ms/100us // 1ms period, 100us precision
-
-module mips_single_cycle_tb();
-
-  logic        clk;
-  logic        reset;
-
-  logic [31:0] writedata, dataadr;
-  logic        memwrite;
-
-  logic firstTest, secondTest;
-
-  // instantiate device to be tested
-  top dut(clk, reset, writedata, dataadr, memwrite);
-
-  initial
-  begin
-      firstTest = 1'b0;
-      secondTest = 1'b0;
-      $dumpfile("mips_single_cycle_test.vcd");
-      $dumpvars(0,clk,reset,writedata,dataadr,memwrite);
-      // $display("writedata\tdataadr\tmemwrite");
-      $monitor("0x%7h\t%7d\t%8d",writedata,dataadr,memwrite);
-      // $dumpvars(0,clk,a,b,ctrl,result,zero,negative,carryOut,overflow);
-      // $display("Ctl Z  N  O  C  A                    B                    ALUresult");
-      // $monitor("%3b %b  %b  %b  %b  %8b (0x%2h;%3d)  %8b (0x%2h;%3d)  %8b (0x%2h;%3d)",ctrl,zero,negative,overflow,carryOut,a,a,a,b,b,b,result,result,result);
-  end
-
-  // initialize test
-  initial
-    begin
-      reset <= 1; # 22; reset <= 0;
-    end
-
-  // generate clock to sequence tests
-  always
-    begin
-      clk <= 1; # 5; clk <= 0; # 5;
-    end
-
-  always @(posedge clk)
-  begin
-      $display("+");
-      $display("\t+instr = 0x%8h",dut.instr);
-      $display("\t+op = 0b%6b",dut.mips.c.op);
-      $display("\t+controls = 0b%9b",dut.mips.c.md.controls);
-      $display("\t+funct = 0b%6b",dut.mips.c.ad.funct);
-      $display("\t+aluop = 0b%2b",dut.mips.c.ad.aluop);
-      $display("\t+alucontrol = 0b%3b",dut.mips.c.ad.alucontrol);
-      $display("\t+alu result = 0x%8h",dut.mips.dp.alu.result);
-      $display("\t+HiLo = 0x%8h",dut.mips.dp.alu.HiLo);
-      $display("\t+$v0 = 0x%4h",dut.mips.dp.rf.rf[2]);
-      $display("\t+$v1 = 0x%4h",dut.mips.dp.rf.rf[3]);
-      $display("\t+$a0 = 0x%4h",dut.mips.dp.rf.rf[4]);
-      $display("\t+$a1 = 0x%4h",dut.mips.dp.rf.rf[5]);
-      $display("\t+$t0 = 0x%4h",dut.mips.dp.rf.rf[8]);
-      $display("\t+$t1 = 0x%4h",dut.mips.dp.rf.rf[9]);
-      $display("\t+regfile -- ra1 = %d",dut.mips.dp.rf.ra1);
-      $display("\t+regfile -- ra2 = %d",dut.mips.dp.rf.ra2);
-      $display("\t+regfile -- we3 = %d",dut.mips.dp.rf.we3);
-      $display("\t+regfile -- wa3 = %d",dut.mips.dp.rf.wa3);
-      $display("\t+regfile -- wd3 = %d",dut.mips.dp.rf.wd3);
-      $display("\t+regfile -- rd1 = %d",dut.mips.dp.rf.rd1);
-      $display("\t+regfile -- rd2 = %d",dut.mips.dp.rf.rd2);
-      $display("\t+RAM[%4d] = %4d",dut.dmem.a,dut.dmem.rd);
-      $display("writedata\tdataadr\tmemwrite");
-  end
-
-  // check results
-  always @(negedge clk)
-    begin
-      $display("-");
-      $display("\t-instr = 0x%8h",dut.instr);
-      $display("\t-op = 0b%6b",dut.mips.c.op);
-      $display("\t-controls = 0b%9b",dut.mips.c.md.controls);
-      $display("\t-funct = 0b%6b",dut.mips.c.ad.funct);
-      $display("\t-aluop = 0b%2b",dut.mips.c.ad.aluop);
-      $display("\t-alucontrol = 0b%3b",dut.mips.c.ad.alucontrol);
-      $display("\t-alu result = 0x%8h",dut.mips.dp.alu.result);
-      $display("\t-HiLo = 0x%8h",dut.mips.dp.alu.HiLo);
-      $display("\t-$v0 = 0x%4h",dut.mips.dp.rf.rf[2]);
-      $display("\t-$v1 = 0x%4h",dut.mips.dp.rf.rf[3]);
-      $display("\t-$a0 = 0x%4h",dut.mips.dp.rf.rf[4]);
-      $display("\t-$a1 = 0x%4h",dut.mips.dp.rf.rf[5]);
-      $display("\t-$t0 = 0x%4h",dut.mips.dp.rf.rf[8]);
-      $display("\t-$t1 = 0x%4h",dut.mips.dp.rf.rf[9]);
-      $display("\t-regfile -- ra1 = %d",dut.mips.dp.rf.ra1);
-      $display("\t-regfile -- ra2 = %d",dut.mips.dp.rf.ra2);
-      $display("\t-regfile -- we3 = %d",dut.mips.dp.rf.we3);
-      $display("\t-regfile -- wa3 = %d",dut.mips.dp.rf.wa3);
-      $display("\t-regfile -- wd3 = %d",dut.mips.dp.rf.wd3);
-      $display("\t-regfile -- rd1 = %d",dut.mips.dp.rf.rd1);
-      $display("\t-regfile -- rd2 = %d",dut.mips.dp.rf.rd2);
-      $display("\t+RAM[%4d] = %4d",dut.dmem.a,dut.dmem.rd);
-      $display("writedata\tdataadr\tmemwrite");
-      if (dut.dmem.RAM[84] === 32'h9504)
-        begin
-          $display("Successfully wrote 0x%4h at RAM[%3d]",84,32'h9504);
-          firstTest = 1'b1;
-        end
-      if (dut.dmem.RAM[88] === 0)
-        begin
-          $display("Successfully wrote 0x%4h at RAM[%3d]",88,0);
-          secondTest = 1'b1;
-        end
-      if(memwrite) begin
-        if(dataadr === 84 & writedata === 32'h9504)
-        begin
-          $display("Successfully wrote 0x%4h at RAM[%3d]",writedata,dataadr);
-          firstTest = 1'b1;
-        end
-        if(dataadr === 88 & writedata === 0)
-        begin
-          $display("Successfully wrote 0x%4h at RAM[%3d]",writedata,dataadr);
-          secondTest = 1'b1;
-        //if(dataadr === 60 & writedata === 28) begin
-            // $display("Simulation succeeded");
-            // $finish;
-          // end
-        end
-        // else if (dataadr !== 80) begin
-        //   $display("Simulation failed");
-        //   $finish;
-        // end
-      end
-      if (firstTest === 1'b1 & secondTest === 1'b1)
-      begin
-          $display("Program successfully completed");
-          $finish;
-      end
-      // else
-      // begin
-      //     $display("Program UNsuccessfully completed");
-      //     $finish;
-      // end
-    end
-endmodule
-
-module top(input  logic        clk, reset,
-           output logic [31:0] writedata, dataadr,
-           output logic        memwrite);
-
-  logic [31:0] pc, instr, readdata;
-
-  // instantiate processor and memories
-  mips mips(clk, reset, pc, instr, memwrite, dataadr,
-            writedata, readdata);
-  imem imem(pc[7:2], instr);
-  dmem dmem(clk, memwrite, dataadr, writedata, readdata);
-endmodule
-
-module dmem(input  logic        clk, we,
-            input  logic [31:0] a, wd,
-            output logic [31:0] rd);
-
-  logic [31:0] RAM[0:63];
-
-  assign rd = RAM[a[31:2]]; // word aligned
-
-  always @(posedge clk)
-    if (we) RAM[a[31:2]] <= wd;
-endmodule
-
-module imem(input  logic [5:0] a,
-            output logic [31:0] rd);
-
-  logic [31:0] RAM[0:63];
-
-  initial
-    begin
-      // read memory in hex format from file
-      $readmemh("memfile.dat",RAM);
-    end
-
-  assign rd = RAM[a]; // word aligned
-endmodule
-
-module mips(input  logic        clk, reset,
-            output logic [31:0] pc,
-            input  logic [31:0] instr,
-            output logic        memwrite,
-            output logic [31:0] aluout, writedata,
-            input  logic [31:0] readdata);
-
-  logic       memtoreg, alusrc, regdst,
-              regwrite, jump, pcsrc, zero;
-  logic [2:0] alucontrol;
-
-  controller c(instr[31:26], instr[5:0], zero,
-               memtoreg, memwrite, pcsrc,
-               alusrc, regdst, regwrite, jump,
-               alucontrol);
-  datapath dp(clk, reset, memtoreg, pcsrc,
-              alusrc, regdst, regwrite, jump,
-              alucontrol,
-              zero, pc, instr,
-              aluout, writedata, readdata);
-endmodule
-
-module controller(input  logic [5:0] op, funct,
-                  input  logic       zero,
-                  output logic       memtoreg, memwrite,
-                  output logic       pcsrc, alusrc,
-                  output logic       regdst, regwrite,
-                  output logic       jump,
-                  output logic [2:0] alucontrol);
-
-  logic [1:0] aluop;
-  logic       branch;
-
-  maindec md(op, memtoreg, memwrite, branch,
-             alusrc, regdst, regwrite, jump, aluop);
-  aludec  ad(funct, aluop, alucontrol);
-
-  assign pcsrc = branch & zero;
-endmodule
-
-module maindec(input  logic [5:0] op,
-               output logic       memtoreg, memwrite,
-               output logic       branch, alusrc,
-               output logic       regdst, regwrite,
-               output logic       jump,
-               output logic [1:0] aluop);
-
-  logic [8:0] controls;
-
-  assign {regwrite, regdst, alusrc, branch, memwrite,
-          memtoreg, jump, aluop} = controls; // controls has 9 logical signals
-
-  always @*
-    case(op)
-      6'b000000: controls <= 9'b110000010; // RTYPE
-      6'b100011: controls <= 9'b101001000; // LW
-      6'b101011: controls <= 9'b001010000; // SW
-      6'b000100: controls <= 9'b000100001; // BEQ
-      6'b001000: controls <= 9'b101000000; // ADDI
-      6'b000010: controls <= 9'b000000100; // J
-      default:   controls <= 9'bxxxxxxxxx; // illegal op
-    endcase
-endmodule
-
-module aludec(input  logic [5:0] funct,
-              input  logic [1:0] aluop,
-              output logic [2:0] alucontrol);
-
-  always @*
-    case(aluop)
-      2'b00: alucontrol <= 3'b010;  // add (for lw/sw/addi)
-      2'b01: alucontrol <= 3'b110;  // sub (for beq)
-      default: case(funct)          // R-type instructions]
-          6'b100000: alucontrol <= 3'b010; // add
-          6'b100010: alucontrol <= 3'b110; // sub
-          6'b100100: alucontrol <= 3'b000; // and
-          6'b100101: alucontrol <= 3'b001; // or
-          6'b101010: alucontrol <= 3'b111; // slt
-          6'b011000: alucontrol <= 3'b011; // mult
-          6'b010010: alucontrol <= 3'b100; // mflo
-          6'b010000: alucontrol <= 3'b101; // mfhi
-          default:   alucontrol <= 3'bxxx; // ???
-        endcase
-    endcase
-endmodule
-
-//
-// 000
-// 001
-// 010
-// 011 - available - use for mult
-// 100 - available - use for mfhi
-// 101 - available - use for mflo
-// 110
-// 111
-
-module datapath(input  logic        clk, reset,
-                input  logic        memtoreg, pcsrc,
-                input  logic        alusrc, regdst,
-                input  logic        regwrite, jump,
-                input  logic [2:0]  alucontrol,
-                output logic        zero,
-                output logic [31:0] pc,
-                input  logic [31:0] instr,
-                output logic [31:0] aluout, writedata,
-                input  logic [31:0] readdata);
-
-  logic [4:0]  writereg;
-  logic [31:0] pcnext, pcnextbr, pcplus4, pcbranch;
-  logic [31:0] signimm, signimmsh;
-  logic [31:0] srca, srcb;
-  logic [31:0] result;
-
-  // next PC logic
-  flopr #(32) pcreg(clk, reset, pcnext, pc);
-  adder       pcadd1(pc, 32'b100, pcplus4);
-  sl2         immsh(signimm, signimmsh);
-  adder       pcadd2(pcplus4, signimmsh, pcbranch);
-  mux2 #(32)  pcbrmux(pcplus4, pcbranch, pcsrc, pcnextbr);
-  mux2 #(32)  pcmux(pcnextbr, {pcplus4[31:28], instr[25:0], 2'b00}, jump, pcnext);
-
-  // register file logic
-  regfile     rf(clk, regwrite, instr[25:21], instr[20:16],
-                 writereg, result, srca, writedata);
-  mux2 #(5)   wrmux(instr[20:16], instr[15:11],
-                    regdst, writereg);
-  mux2 #(32)  resmux(aluout, readdata, memtoreg, result);
-  signext     se(instr[15:0], signimm);
-
-  // ALU logic
-  mux2 #(32)  srcbmux(writedata, signimm, alusrc, srcb);
-  alu         alu(clk, srca, srcb, alucontrol, aluout, zero);
-endmodule
-
-module regfile(input  logic        clk,
-               input  logic        we3,
-               input  logic [4:0]  ra1, ra2, wa3,
-               input  logic [31:0] wd3,
-               output logic [31:0] rd1, rd2);
-
-  logic [31:0] rf[31:0];
-
-  // three ported register file
-  // read two ports combinationally
-  // write third port on rising edge of clk
-  // register 0 hardwired to 0
-  // note: for pipelined processor, write third port
-  // on falling edge of clk
-
-  always @(posedge clk)
-    if (we3) rf[wa3] <= wd3;
-
-  assign rd1 = (ra1 != 0) ? rf[ra1] : 0;
-  assign rd2 = (ra2 != 0) ? rf[ra2] : 0;
-endmodule
-
-module adder(input  logic [31:0] a, b,
-             output logic [31:0] y);
-
-  assign y = a + b;
-endmodule
-
-module sl2(input  logic [31:0] a,
-           output logic [31:0] y);
-
-  // shift left by 2
-  assign y = {a[29:0], 2'b00};
-endmodule
-
-module signext(input  logic [15:0] a,
-               output logic [31:0] y);
-
-  assign y = {{16{a[15]}}, a};
-endmodule
-
-module flopr #(parameter WIDTH = 8)
-              (input  logic             clk, reset,
-               input  logic [WIDTH-1:0] d,
-               output logic [WIDTH-1:0] q);
-
-  always @(posedge clk, posedge reset)
-    if (reset) q <= 0;
-    else       q <= d;
-endmodule
-
-module mux2 #(parameter WIDTH = 8)
-             (input  logic [WIDTH-1:0] d0, d1,
-              input  logic             s,
-              output logic [WIDTH-1:0] y);
-
-  assign y = s ? d1 : d0;
-endmodule
-
-module alu(input  logic clk,
-           input  logic [31:0] a, b,
-           input  logic [2:0]  alucontrol,
-           output logic [31:0] result,
-           output logic        zero);
-
-  logic [31:0] condinvb, sum;
-  logic [63:0] HiLo;
-
-  assign zero = (result == 32'b0);
-  assign condinvb = alucontrol[2] ? ~b : b;
-  assign sumSlt = a + condinvb + alucontrol[2];
-
-	initial
-		begin
-			HiLo = 64'b0;
-		end
-
-  always @(a,b,alucontrol)
-    begin
-      case (alucontrol)
-        3'b000: result = a & b; // and
-        3'b001: result = a | b; // or
-        3'b010: result = a + b; // add
-        3'b100: result = HiLo[31:0]; // MFLO
-        3'b101: result = HiLo[63:32]; // MFHI
-        3'b110: result = sumSlt; // sub
-        3'b111: result = sumSlt[31]; // slt
-      endcase
-    end
-
-    // case (alucontrol[1:0])
-    //   2'b00: result = a & b;
-    //   2'b01: result = a | b;
-    //   2'b10: result = sum;
-    //   2'b11: result = sum[31];
-    // endcase
-
-	// always @(posedge clk)
-	// 	begin
-  //     case (alucontrol)
-  //       3'b000: result = a & b; // and
-  //       3'b001: result = a | b; // or
-  //       3'b010: result = a + b; // add
-  //       3'b100: result = HiLo[31:0]; // MFLO
-  //       3'b101: result = HiLo[63:32]; // MFHI
-  //       3'b110: result = sumSlt; // sub
-  //       3'b111: result = sum[31]; // slt
-  //     endcase
-  //   end
-
-	//Multiply and divide results are only stored at clock falling edge.
-	always @(negedge clk)
-		begin
-      case (alucontrol)
-        3'b011: HiLo = a * b; // mult
-        3'b101: // div
-          begin
-            HiLo[31:0] = a / b;
-            HiLo[63:32] = a % b;
-          end
-      endcase
-		end
-endmodule
+# Veripog
 
+ECE-251: Spring 2024
+
+[![ECE251: Computer Architecture - Final Project](http://img.youtube.com/vi/oY5B1MRwbe8/0.jpg)](https://www.youtube.com/watch?v=oY5B1MRwbe8 "ECE251: Computer Architecture - Final Project")
+
+<https://youtu.be/oY5B1MRwbe8>
+
+## Instruction Set
+
+| ISA Aspect                 | Implementation                                   |
+|----------------------------|--------------------------------------------------|
+| ALU Operand Size           | 32 bits                                          |
+| Address Bus Size           | 32 bits                                          |
+| Addressability             | Byte addressable                                 |
+| Register File Size         | 32 registers, each 32 bits wide                  |
+| Opcode Size                | 6 bits                                           |
+| Function Size              | 6 bits                                           |
+| shamt Size                 | 5 bits                                           |
+| Instruction Length         | 32 bits                                          |
+| PC Increment               | 4 bytes                                          |
+| Immediate Size             | 16 bits                                          |
+| R-type Instruction Support | `ADD`, `SUB`, `AND`, `OR`, `SLT`, `NOR`          |
+| I-type Instruction Support | `LW`, `SW`, `BEQ`, `ADDI`                        |
+| J-type Instruction Support | `J`                                              |
+| Memory Reference Support   | Yes                                              |
+| Total Memory Size          | 64 words (256 bytes)                             |
+
+### Datapath Diagram
+
+![Alt Text](images/DatapathDiagram.jpeg)
+
+### Instruction Formats
+
+![Alt Text](images/instr_format.png)
+
+### R-Type Instructions
+
+| Name | Mnemonic | Operation                       | Opcode / Funct  | Opcode / Funct (Binary)     |
+|------|----------|---------------------------------|-----------------|-----------------------------|
+| ADD  | `add`    | R[rd] = R[rs] + R[rt]           | $0 / 20_{hex}$  | 000000 / 100000             |
+| SUB  | `sub`    | R[rd] = R[rs] - R[rt]           | $0 / 22_{hex}$  | 000000 / 100010             |
+| AND  | `and`    | R[rd] = R[rs] & R[rt]           | $0 / 24_{hex}$  | 000000 / 100100             |
+| OR   | `or`     | R[rd] = R[rs] \| R[rt]          | $0 / 25_{hex}$  | 000000 / 100101             |
+| NOR  | `nor`    | R[rd] = ~(R[rs] \| R[rt])       | $0 / 27_{hex}$  | 000000 / 100111             |
+| SLT  | `slt`    | R[rd] = (R[rs] < R[rt]) ? 1 : 0 | $0 / 2A_{hex}$  | 000000 / 101010             |
+
+![Alt Text](images/instr_rtype.png)
+
+### I-Type Instructions
+
+| Name   | Mnemonic | Operation                                      | Opcode       | Opcode (Binary)  |
+|--------|----------|------------------------------------------------|--------------|------------------|
+| LW     | `lw`     | R[rt] = M[R[rs]+SignExtImm]                    | $23_{hex}$   | 100011           |
+| SW     | `sw`     | M[R[rs]+SignExtImm] = R[rt]                    | $2B_{hex}$   | 101011           |
+| BEQ    | `beq`    | if(R[rs]==R[rt]) <br>&nbsp; PC=PC+4+BranchAddr | $14_{hex}$   | 000100           |
+| ADDI   | `addi`   | R[rt] = R[rs] + SignExtImm                     | $08_{hex}$   | 001000           |
+
+![Alt Text](images/instr_itype.png)
+
+### J-Type Instructions
+
+| Name | Mnemonic | Operation      | Opcode       | Opcode (Binary)  |
+|------|----------|----------------|--------------|------------------|
+| J    | `j`      | PC = JumpAddr  | $02_{hex}$   | 000010           |
+
+![Alt Text](images/instr_jtype.png)
+
+## Control Signal Mapping for MIPS Instructions
+
+### I-type Instructions
+
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|-----------------|------------|----------|----------|----------|------------|------------|--------|---------|
+| `LW`            | 1          | 0        | 1        | 0        | 0          | 1          | 0      | 00      |
+| `SW`            | 0          | X        | 1        | 0        | 1          | X          | 0      | 00      |
+| `BEQ`           | 0          | X        | 0        | 1        | 0          | X          | 0      | 01      |
+| `ADDI`          | 1          | 0        | 1        | 0        | 0          | 0          | 0      | 00      |
+
+### R-type Instructions
+
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|------------------------|------------|----------|----------|----------|------------|------------|--------|---------|
+| `ADD`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `SUB`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `AND`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `OR`                   | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `NOR`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+| `SLT`                  | 1          | 1        | 0        | 0        | 0          | 0          | 0      | 10      |
+
+### Jump Instruction
+
+| **Instruction** | `RegWrite` | `RegDst` | `ALUSrc` | `Branch` | `MemWrite` | `MemtoReg` | `Jump` | `ALUOp` |
+|----------------------|------------|----------|----------|----------|------------|------------|--------|---------|
+| `J`                  | 0          | X        | X        | 0        | 0          | X          | 1      | XX      |
+
+### Explanation of Columns
+
+- **Instruction**: MIPS assembly instruction.
+- **RegWrite**: Enables writing to the register file.
+- **RegDst**: Determines the destination register (1 for `rd` field, 0 for `rt` field).
+- **ALUSrc**: Selects the second ALU operand (0 for register, 1 for immediate value).
+- **Branch**: Determines if the instruction is a branch instruction (e.g., `BEQ`).
+- **MemWrite**: Enables writing to data memory.
+- **MemtoReg**: Selects the value to write back to the register (1 for data memory output, 0 for ALU result).
+- **Jump**: Indicates a jump instruction.
+- **ALUOp**: Specifies the type of ALU operation (00 for `LW`/`SW`, 01 for `BEQ`, 10 for R-type, and others for specific operations like `ADDI`).
+- **ALUControl**: The specific ALU operation code (e.g., 010 for add, 110 for sub), often determined by the combination of `ALUOp` and the funct field for R-type instructions.
+
+## Timing Diagrams
+
+### R-type Timing Diagram
+
+![Alt Text](images/timing_rtype.png)
+
+```t
+00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
+00000004: 20090003 <- addi $t1, $zero, 3      # $t1 = 3
+00000008: 01095020 <- add $t2, $t0, $t1       # $t3 = 4 + 3 = 7
+0000000c: ac0a0000 <- sw $t2, 0($zero)        # Store at address 0
+```
+
+### I-type Timing Diagram
+
+![Alt Text](images/timing_itype.png)
+
+```t
+00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
+00000004: ac080001 <- sw $t0, 1($zero)        # Store at address 1
+00000008: 8c090001 <- lw $t1, 1($zero)        # Load data
+0000000c: ac090000 <- sw $t1, 0($zero)        # Store at address 0
+```
+
+### J-type Timing Diagram
+
+![Alt Text](images/timing_jtype.png)
+
+```t
+00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
+00000004: 08000002 <- j    end                # jump to end
+00000008: ac080000 <- sw $t0, 0($zero)        # Store at address 0
+```
+
+## Registers
+
+| NAME      | NUMBER   | USE                                                   | PRESERVED ACROSS A CALL? |
+|-----------|----------|-------------------------------------------------------|--------------------------|
+| $zero     | 0        | The Constant Value 0                                  | N.A.                     |
+| $at       | 1        | Assembler Temporary                                   | No                       |
+| \$v0-$v1  | 2-3      | Values for Function Results and Expression Evaluation | No                       |
+| \$a0-$a4  | 4-8      | Arguments                                             | No                       |
+| \$t0-$t9  | 9-18     | Temporaries                                           | No                       |
+| \$s0-$s8  | 19-27    | Saved Temporaries                                     | Yes                      |
+| $gp       | 28       | Global Pointer                                        | Yes                      |
+| $sp       | 29       | Stack Pointer                                         | Yes                      |
+| $fp       | 30       | Frame Pointer                                         | Yes                      |
+| $ra       | 31       | Return Address                                        | No                       |
+
+## Usage Guide
+
+### Writing a Program
+
+1. Create a file with a `.asm` extension.
+2. Write your assembly code in this file.
+
+### Loading the Program
+
+1. Run the assembler by executing the following command:
+
+   ```sh
+   python assembler.py
+   ```
+
+2. When prompted, enter the name of your program (excluding the `.asm` extension). For example, if your program is named `fib.asm`, enter `fib`.
+
+3. Open the `tb_computer.sv` file.
+4. Locate the line:
+
+   ```systemverilog
+   $readmemh("fib.dat", dut.imem.RAM, 0, 63);
+   ```
+
+   Replace `fib` with the name of your program.
+
+### Running the Program
+
+1. On a Linux system, run the following command:
+
+   ```sh
+   make clean compile simulate
+   ```
+
+   The output will be displayed in both hexadecimal and decimal formats.
+
+2. To analyze the timing diagram, run:
+
+   ```sh
+   make display
+   ```
+
+## Fibonnaci Program
+
+### fib.asm
+
+```t
+main:
+    addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
+    addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
+    addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2)
+    addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index)
+
+loop:
+    beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop
+    add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number)
+    add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration)
+    add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration)
+    addi $a0, $a0, 1         # Increment counter ($a0)
+    j    loop                # Repeat the loop
+
+finish:
+    sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0
+
+end:
+    j    end                 # Loop forever (end of program)
+```
+
+### fib.txt
+
+```t
+00000000: 20010000 <- addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
+00000004: 20020001 <- addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
+00000008: 20040002 <- addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2)
+0000000c: 20050008 <- addi $a1, $zero, 8       # Initialize $a1 (argument) to 8 (target Fibonacci index)
+00000010: 10850005 <- beq  $a0, $a1, finish    # If counter ($a0) equals 8, exit the loop
+00000014: 00221820 <- add  $v1, $at, $v0       # $v1 (value for function result) = $at + $v0 (next Fibonacci number)
+00000018: 00020820 <- add  $at, $zero, $v0     # $at = $v0 (update $at for the next iteration)
+0000001c: 00031020 <- add  $v0, $zero, $v1     # $v0 = $v1 (update $v0 for the next iteration)
+00000020: 20840001 <- addi $a0, $a0, 1         # Increment counter ($a0)
+00000024: 08000004 <- j    loop                # Repeat the loop
+00000028: ac020000 <- sw   $v0, 0($zero)       # Store the 8th Fibonacci number in memory address 0
+0000002c: 0800000b <- j    end                 # Loop forever (end of program)
+```
+
+### fib.dat
+
+```t
+20010000
+20020001
+20040002
+20050008
+10850005
+00221820
+00020820
+00031020
+20840001
+08000004
+ac020000
+0800000b
+```
+
+## Factorial Program
+
+### fact.asm
+
+```t
+main:
+    addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+    addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+    addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
+
+Loop:
+    add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+    add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
+
+MultiplyLoop:
+    beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+    add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+    addi $t4, $t4, -1           # $t4 = $t4 - 1
+    j MultiplyLoop              # Repeat the multiplication loop
+
+MultiplyEnd:
+    add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+    addi $t0, $t0, 1
+    addi $t3, $t2, 1            # $t3 = $t2 + 1
+    slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+    beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+    j    Loop                   # else, continue the loop
+
+End:
+    sw   $t1, 0($zero)          # Store the result in memory (if needed)
+```
+
+### fact.txt
+
+```t
+00000000: 20080001 <- addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+00000004: 20090001 <- addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+00000008: 200a0004 <- addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
+0000000c: 00005820 <- add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+00000010: 01006020 <- add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
+00000014: 11800003 <- beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+00000018: 01695820 <- add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+0000001c: 218cffff <- addi $t4, $t4, -1           # $t4 = $t4 - 1
+00000020: 08000005 <- j MultiplyLoop              # Repeat the multiplication loop
+00000024: 01604820 <- add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+00000028: 21080001 <- addi $t0, $t0, 1
+0000002c: 214b0001 <- addi $t3, $t2, 1            # $t3 = $t2 + 1
+00000030: 010b582a <- slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+00000034: 11600001 <- beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+00000038: 08000003 <- j    Loop                   # else, continue the loop
+0000003c: ac090000 <- sw   $t1, 0($zero)          # Store the result in memory (if needed)
+```
+
+### fact.dat
+
+```t
+20080001
+20090001
+200a0004
+00005820
+01006020
+11800003
+01695820
+218cffff
+08000005
+01604820
+21080001
+214b0001
+010b582a
+11600001
+08000003
+ac090000
 ```

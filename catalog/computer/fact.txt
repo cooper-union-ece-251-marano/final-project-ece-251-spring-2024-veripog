@@ -1,0 +1,16 @@
+00000000: 20080001 <- addi $t0, $zero, 1          # $t0 = 1 (loop counter)
+00000004: 20090001 <- addi $t1, $zero, 1          # $t1 = 1 (factorial result)
+00000008: 200a0004 <- addi $t2, $zero, 4          # $t2 = 4 (target number, set n = 4)
+0000000c: 00005820 <- add $t3, $zero, $zero       # $t3 = 0 (temporary storage for result of multiplication)
+00000010: 01006020 <- add $t4, $t0, $zero         # $t4 = $t0 (loop counter for repeated addition)
+00000014: 11800003 <- beq $t4, $zero, MultiplyEnd # If $t4 == 0, end multiplication
+00000018: 01695820 <- add $t3, $t3, $t1           # $t3 = $t3 + $t1 (accumulate the result)
+0000001c: 218cffff <- addi $t4, $t4, -1           # $t4 = $t4 - 1
+00000020: 08000005 <- j MultiplyLoop              # Repeat the multiplication loop
+00000024: 01604820 <- add $t1, $t3, $zero         # $t1 = $t3 (store the result back in $t1)
+00000028: 21080001 <- addi $t0, $t0, 1
+0000002c: 214b0001 <- addi $t3, $t2, 1            # $t3 = $t2 + 1
+00000030: 010b582a <- slt  $t3, $t0, $t3          # $t3 = ($t0 < $t3) ? 1 : 0
+00000034: 11600001 <- beq  $t3, $zero, End        # if $t3 == 0 (i.e., $t0 >= $t2 + 1), end the loop
+00000038: 08000003 <- j    Loop                   # else, continue the loop
+0000003c: ac090000 <- sw   $t1, 0($zero)          # Store the result in memory (if needed)
