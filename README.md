@@ -2,7 +2,7 @@
 
 ECE-251: Spring 2024
 
-## Instruction Set for Single-Cycle MIPS Processor
+## Instruction Set
 
 | ISA Aspect                 | Implementation                                   |
 |----------------------------|--------------------------------------------------|
@@ -114,7 +114,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_rtype.png)
 
-```txt
+```t
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: 20090003 <- addi $t1, $zero, 3      # $t1 = 3
 00000008: 01095020 <- add $t2, $t0, $t1       # $t3 = 4 + 3 = 7
@@ -125,7 +125,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_itype.png)
 
-```txt
+```t
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: ac080001 <- sw $t0, 1($zero)        # Store at address 1
 00000008: 8c090001 <- lw $t1, 1($zero)        # Load data
@@ -136,7 +136,7 @@ ECE-251: Spring 2024
 
 ![Alt Text](images/timing_jtype.png)
 
-```txt
+```t
 00000000: 20080004 <- addi $t0, $zero, 4      # $t0 = 4
 00000004: 08000002 <- j    end                # jump to end
 00000008: ac080000 <- sw $t0, 0($zero)        # Store at address 0
@@ -161,7 +161,7 @@ ECE-251: Spring 2024
 
 ### fib.asm
 
-```txt
+```t
 main:
     addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0))
     addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1))
@@ -185,7 +185,7 @@ end:
 
 ### fib.txt
 
-```txt
+```t
 00000000: addi $at, $zero, 0       # Initialize $at (assembler temporary) to 0 (Fibonacci(0)) -> 20010000
 00000004: addi $v0, $zero, 1       # Initialize $v0 (value for function result) to 1 (Fibonacci(1)) -> 20020001
 00000008: addi $a0, $zero, 2       # Initialize $a0 (argument) to 2 (counter starts at 2) -> 20040002
@@ -202,7 +202,7 @@ end:
 
 ### fib.dat
 
-```txt
+```t
 20010000
 20020001
 20040002
